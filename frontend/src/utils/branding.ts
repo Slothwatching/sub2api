@@ -5,9 +5,10 @@ export function updateFavicon(logoUrl: string): void {
     allowRelative: true,
     allowDataUrl: true,
   })
-  if (!sanitizedLogoUrl) {
+  if (logoUrl.trim() && !sanitizedLogoUrl) {
     return
   }
+  const faviconUrl = sanitizedLogoUrl || '/brand-mark.svg'
 
   let link = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
   if (!link) {
@@ -16,6 +17,6 @@ export function updateFavicon(logoUrl: string): void {
     document.head.appendChild(link)
   }
 
-  link.type = sanitizedLogoUrl.endsWith('.svg') ? 'image/svg+xml' : 'image/x-icon'
-  link.href = sanitizedLogoUrl
+  link.type = faviconUrl.endsWith('.svg') ? 'image/svg+xml' : 'image/x-icon'
+  link.href = faviconUrl
 }

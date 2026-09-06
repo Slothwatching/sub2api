@@ -1,29 +1,24 @@
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-dark-950">
-    <!-- Background Decoration -->
-    <div class="pointer-events-none fixed inset-0 bg-mesh-gradient"></div>
-
-    <!-- Sidebar -->
+  <div class="app-shell min-h-screen" :class="{ 'workspace-user': !isAdmin, 'workspace-admin': isAdmin, 'workspace-compact': sidebarCollapsed }">
+    <AppHeader />
     <AppSidebar />
-
-    <!-- Main Content Area -->
-    <div
-      class="relative min-h-screen transition-all duration-300"
-      :class="[sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-64']"
-    >
-      <!-- Header -->
-      <AppHeader />
-
-      <!-- Main Content -->
-      <main class="p-4 md:p-6 lg:p-8">
-        <slot />
-      </main>
-    </div>
+    <main class="app-main workspace-content">
+      <div class="workspace-page-intro">
+        <div>
+          <p class="workspace-context">{{ isAdmin ? t('home.workspace.administration') : t('home.workspace.label') }}</p>
+          <h1 class="app-heading">{{ pageTitle }}</h1>
+          <p v-if="pageDescription" class="workspace-page-description">{{ pageDescription }}</p>
+        </div>
+      </div>
+      <slot />
+    </main>
   </div>
 </template>
 
 <script setup lang="ts">
 import '@/styles/onboarding.css'
+import { usePageHeading } from '@/composables/usePageHeading'
+import { useI18n } from 'vue-i18n'
 import { computed, onMounted } from 'vue'
 import { useAppStore } from '@/stores'
 import { useAuthStore } from '@/stores/auth'
@@ -32,6 +27,8 @@ import { useOnboardingStore } from '@/stores/onboarding'
 import AppSidebar from './AppSidebar.vue'
 import AppHeader from './AppHeader.vue'
 
+const { t } = useI18n()
+const { pageTitle, pageDescription } = usePageHeading()
 const appStore = useAppStore()
 const authStore = useAuthStore()
 const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)

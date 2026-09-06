@@ -20,6 +20,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useThemeAppearance } from '@/composables/useThemeAppearance'
 import { useI18n } from 'vue-i18n'
 import {
   Chart as ChartJS,
@@ -54,18 +55,16 @@ const props = defineProps<{
   loading?: boolean
 }>()
 
-const isDarkMode = computed(() => {
-  return document.documentElement.classList.contains('dark')
-})
-
+const { isDark: isDarkMode } = useThemeAppearance()
 const chartColors = computed(() => ({
-  text: isDarkMode.value ? '#e5e7eb' : '#374151',
-  grid: isDarkMode.value ? '#374151' : '#e5e7eb',
-  input: '#3b82f6',
-  output: '#10b981',
-  cacheCreation: '#f59e0b',
-  cacheRead: '#06b6d4',
-  cacheHitRate: '#8b5cf6'
+  text: isDarkMode.value ? '#c5cfc0' : '#626a63',
+  grid: isDarkMode.value ? '#3a473e' : '#dddcd3',
+  surface: isDarkMode.value ? '#28322b' : '#fffefa',
+  input: isDarkMode.value ? '#afccb5' : '#36584b',
+  output: isDarkMode.value ? '#96bbd3' : '#487c9c',
+  cacheCreation: isDarkMode.value ? '#d3b77d' : '#9b712c',
+  cacheRead: isDarkMode.value ? '#9fbfb3' : '#598777',
+  cacheHitRate: isDarkMode.value ? '#b8a6ce' : '#806799'
 }))
 
 const chartData = computed(() => {
@@ -75,7 +74,7 @@ const chartData = computed(() => {
     labels: props.trendData.map((d) => d.date),
     datasets: [
       {
-        label: 'Input',
+        label: t('dashboard.input'),
         data: props.trendData.map((d) => d.input_tokens),
         borderColor: chartColors.value.input,
         backgroundColor: `${chartColors.value.input}20`,
@@ -83,7 +82,7 @@ const chartData = computed(() => {
         tension: 0.3
       },
       {
-        label: 'Output',
+        label: t('dashboard.output'),
         data: props.trendData.map((d) => d.output_tokens),
         borderColor: chartColors.value.output,
         backgroundColor: `${chartColors.value.output}20`,
@@ -91,7 +90,7 @@ const chartData = computed(() => {
         tension: 0.3
       },
       {
-        label: 'Cache Creation',
+        label: t('dashboard.chart.cacheCreation'),
         data: props.trendData.map((d) => d.cache_creation_tokens),
         borderColor: chartColors.value.cacheCreation,
         backgroundColor: `${chartColors.value.cacheCreation}20`,
@@ -99,7 +98,7 @@ const chartData = computed(() => {
         tension: 0.3
       },
       {
-        label: 'Cache Read',
+        label: t('dashboard.chart.cacheRead'),
         data: props.trendData.map((d) => d.cache_read_tokens),
         borderColor: chartColors.value.cacheRead,
         backgroundColor: `${chartColors.value.cacheRead}20`,
@@ -107,7 +106,7 @@ const chartData = computed(() => {
         tension: 0.3
       },
       {
-        label: 'Cache Hit Rate',
+        label: t('dashboard.chart.cacheHitRate'),
         data: props.trendData.map((d) => {
           const totalPromptTokens = d.input_tokens + d.cache_read_tokens + d.cache_creation_tokens
           return totalPromptTokens > 0 ? (d.cache_read_tokens / totalPromptTokens) * 100 : 0
@@ -144,6 +143,12 @@ const lineOptions = computed(() => ({
       }
     },
     tooltip: {
+      backgroundColor: chartColors.value.surface,
+      titleColor: chartColors.value.text,
+      bodyColor: chartColors.value.text,
+      footerColor: chartColors.value.text,
+      borderColor: chartColors.value.grid,
+      borderWidth: 1,
       callbacks: {
         label: (context: any) => {
           if (context.dataset.yAxisID === 'yPercent') {
@@ -155,7 +160,7 @@ const lineOptions = computed(() => ({
           const dataIndex = tooltipItems[0]?.dataIndex
           if (dataIndex !== undefined && props.trendData[dataIndex]) {
             const data = props.trendData[dataIndex]
-            return `Actual: $${formatCost(data.actual_cost)} | Standard: $${formatCost(data.cost)}`
+            return `${t('dashboard.actual')}: $${formatCost(data.actual_cost)} | ${t('dashboard.standard')}: $${formatCost(data.cost)}`
           }
           return ''
         }
@@ -170,7 +175,7 @@ const lineOptions = computed(() => ({
       ticks: {
         color: chartColors.value.text,
         font: {
-          size: 10
+          size: 11
         }
       }
     },
@@ -181,7 +186,7 @@ const lineOptions = computed(() => ({
       ticks: {
         color: chartColors.value.text,
         font: {
-          size: 10
+          size: 11
         },
         callback: (value: string | number) => formatTokens(Number(value))
       }
@@ -196,7 +201,7 @@ const lineOptions = computed(() => ({
       ticks: {
         color: chartColors.value.cacheHitRate,
         font: {
-          size: 10
+          size: 11
         },
         callback: (value: string | number) => `${value}%`
       }

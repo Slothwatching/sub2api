@@ -5,6 +5,24 @@ export default {
   },
   // Home Page
   home: {
+    autoTheme: 'Auto',
+    followSystem: 'Follow system appearance',
+    workspace: {
+      label: 'Workspace',
+      administration: 'Administration',
+      navigation: 'Main navigation',
+      eyebrow: 'A considered space for AI',
+      defaultSubtitle: 'Your models, keys and usage, thoughtfully organized.',
+      guideTitle: 'From access to your first request',
+      step1Title: 'Create your API key',
+      step1Description: 'Choose an available group and set a limit that works for you.',
+      step2Title: 'Connect your tools',
+      step2Description: 'Use the key guide to configure Claude Code, Codex or your own application.',
+      step3Title: 'Understand your usage',
+      step3Description: 'Review requests, token usage and costs from your dashboard.',
+      providerNote: 'Model access and pricing depend on your available groups.',
+      notFoundDescription: 'This page may have moved, or the address may be incorrect.'
+    },
     viewOnGithub: 'View on GitHub',
     viewDocs: 'View Documentation',
     docs: 'Docs',
@@ -53,9 +71,9 @@ export default {
       unifiedGateway: 'One-Click Access',
       unifiedGatewayDesc: 'Get a single API key to call all connected AI models. No separate applications needed.',
       multiAccount: 'Always Reliable',
-      multiAccountDesc: 'Smart routing across multiple upstream accounts with automatic failover. Say goodbye to errors.',
+      multiAccountDesc: 'Manage access with existing routing and scheduling, and review service status in your dashboard.',
       balanceQuota: 'Pay What You Use',
-      balanceQuotaDesc: 'Usage-based billing with quota limits. Full visibility into team consumption.'
+      balanceQuotaDesc: 'Review actual costs, subscriptions and quota limits for a clear view of every request.'
     },
     // Comparison section
     comparison: {

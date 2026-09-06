@@ -2,6 +2,11 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { updateFavicon } from '@/utils/branding'
 
 describe('updateFavicon', () => {
+  it('restores the neutral mark when an administrator clears the custom logo', () => {
+    updateFavicon('https://example.com/custom-logo.png')
+    updateFavicon('')
+    expect(document.querySelector<HTMLLinkElement>('link[rel="icon"]')?.getAttribute('href')).toBe('/brand-mark.svg')
+  })
   beforeEach(() => {
     document.head.innerHTML = '<link rel="icon" href="/logo.svg">'
   })

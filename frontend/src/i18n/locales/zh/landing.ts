@@ -5,6 +5,24 @@ export default {
   },
   // Home Page
   home: {
+    autoTheme: '自动',
+    followSystem: '跟随系统外观',
+    workspace: {
+      label: '工作空间',
+      administration: '管理工作区',
+      navigation: '主导航',
+      eyebrow: '让 AI 接入井然有序',
+      defaultSubtitle: '在一处，清晰管理你的模型、密钥与使用情况。',
+      guideTitle: '从接入，到第一次调用',
+      step1Title: '创建 API 密钥',
+      step1Description: '选择可用分组，并设置适合自己的额度限制。',
+      step2Title: '连接常用工具',
+      step2Description: '通过密钥使用指南，配置 Claude Code、Codex 或自己的应用。',
+      step3Title: '看清每一次使用',
+      step3Description: '在控制台查看请求、Token 用量与费用明细。',
+      providerNote: '具体可用模型与价格以你的可用分组为准。',
+      notFoundDescription: '页面可能已移动，或你输入的地址不正确。'
+    },
     viewOnGithub: '在 GitHub 上查看',
     viewDocs: '查看文档',
     docs: '文档',
@@ -53,9 +71,9 @@ export default {
       unifiedGateway: '一键接入',
       unifiedGatewayDesc: '获取一个 API 密钥，即可调用所有已接入的 AI 模型，无需分别申请。',
       multiAccount: '稳定可靠',
-      multiAccountDesc: '智能调度多个上游账号，自动切换和负载均衡，告别频繁报错。',
+      multiAccountDesc: '通过已有路由和调度能力管理接入，在控制台查看服务状态。',
       balanceQuota: '用多少付多少',
-      balanceQuotaDesc: '按实际使用量计费，支持设置配额上限，团队用量一目了然。'
+      balanceQuotaDesc: '查看实际费用、订阅与额度限制，清楚了解每一次调用。'
     },
     // 优势对比
     comparison: {

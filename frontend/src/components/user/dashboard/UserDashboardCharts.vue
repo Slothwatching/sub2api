@@ -1,8 +1,8 @@
 <template>
-  <div class="space-y-6">
+  <div class="dashboard-charts space-y-6">
     <!-- Date Range Filter -->
     <div class="card p-4">
-      <div class="flex flex-wrap items-center gap-4">
+      <div class="dashboard-filter-row flex flex-wrap items-center gap-4">
         <div class="flex items-center gap-2">
           <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('dashboard.timeRange') }}:</span>
           <DateRangePicker :start-date="startDate" :end-date="endDate" @update:startDate="$emit('update:startDate', $event)" @update:endDate="$emit('update:endDate', $event)" @change="$emit('dateRangeChange', $event)" />
@@ -20,14 +20,14 @@
     </div>
 
     <!-- Charts Grid -->
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+    <div class="dashboard-chart-layout">
       <!-- Model Distribution Chart -->
-      <div class="card relative overflow-hidden p-4">
+      <div class="dashboard-model-panel card relative overflow-hidden p-4">
         <div v-if="loading" class="absolute inset-0 z-10 flex items-center justify-center bg-white/50 backdrop-blur-sm dark:bg-dark-800/50">
           <LoadingSpinner size="md" />
         </div>
         <h3 class="mb-4 text-sm font-semibold text-gray-900 dark:text-white">{{ t('dashboard.modelDistribution') }}</h3>
-        <div class="flex flex-col items-center gap-4 sm:flex-row sm:gap-6">
+        <div class="dashboard-model-content flex flex-col items-center gap-4">
           <div class="h-48 w-48 shrink-0">
             <Doughnut v-if="modelData" :data="modelData" :options="doughnutOptions" />
             <div v-else class="flex h-full items-center justify-center text-sm text-gray-500 dark:text-gray-400">{{ t('dashboard.noDataAvailable') }}</div>
@@ -65,6 +65,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useThemeAppearance } from '@/composables/useThemeAppearance'
 import { useI18n } from 'vue-i18n'
 import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
 import DateRangePicker from '@/components/common/DateRangePicker.vue'
@@ -79,25 +80,34 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcEleme
 const props = defineProps<{ loading: boolean, startDate: string, endDate: string, granularity: string, trend: TrendDataPoint[], models: ModelStat[] }>()
 defineEmits(['update:startDate', 'update:endDate', 'update:granularity', 'dateRangeChange', 'granularityChange', 'refresh'])
 const { t } = useI18n()
+const { isDark } = useThemeAppearance()
 
 const modelData = computed(() => !props.models?.length ? null : {
   labels: props.models.map((m: ModelStat) => m.model),
   datasets: [{
     data: props.models.map((m: ModelStat) => m.total_tokens),
-    backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16']
+    backgroundColor: isDark.value
+      ? ['#afccb5', '#96bbd3', '#d3b77d', '#cf9a8c', '#b8a6ce', '#c4a5b5', '#9fbfb3', '#bdc797']
+      : ['#36584b', '#487c9c', '#9b712c', '#ad6e60', '#806799', '#a07991', '#598777', '#87935a'],
+    borderWidth: 0
   }]
 })
 
-const doughnutOptions = {
+const doughnutOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
     legend: { display: false },
     tooltip: {
+      backgroundColor: isDark.value ? '#28322b' : '#fffefa',
+      titleColor: isDark.value ? '#eeece6' : '#222c27',
+      bodyColor: isDark.value ? '#eeece6' : '#222c27',
+      borderColor: isDark.value ? '#3a473e' : '#dddcd3',
+      borderWidth: 1,
       callbacks: {
-        label: (context: any) => `${context.label}: ${formatTokens(context.parsed)} tokens`
+        label: (context: any) => `${context.label}: ${formatTokens(context.parsed)} ${t('dashboard.tokens')}`
       }
     }
   }
-}
+}))
 </script>

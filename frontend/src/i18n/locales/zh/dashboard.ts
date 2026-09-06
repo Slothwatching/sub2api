@@ -1,5 +1,6 @@
 export default {
   dashboard: {
+    chart: { cacheCreation: '缓存写入', cacheRead: '缓存读取', cacheHitRate: '缓存命中率' },
     title: '仪表盘',
     welcomeMessage: '欢迎回来！这是您账户的概览。',
     balance: '余额',
