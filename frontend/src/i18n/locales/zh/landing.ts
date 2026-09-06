@@ -5,6 +5,7 @@ export default {
   },
   // Home Page
   home: {
+    pageTitle: '首页',
     autoTheme: '自动',
     followSystem: '跟随系统外观',
     workspace: {

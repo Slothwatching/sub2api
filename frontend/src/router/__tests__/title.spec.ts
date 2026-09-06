@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest'
+import router from '@/router'
+import { i18n } from '@/i18n'
 import { resolveDocumentTitle, resolveRouteDocumentTitle } from '@/router/title'
 
 describe('resolveDocumentTitle', () => {
@@ -45,5 +47,27 @@ describe('resolveRouteDocumentTitle', () => {
         sort_order: 0
       }
     ])).toBe('账号调度器 - EzouAPI')
+  })
+})
+
+
+describe('home route localization', () => {
+  it('uses the selected language for the actual home route title', () => {
+    const locale = i18n.global.locale.value
+    const originalEn = i18n.global.getLocaleMessage('en')
+    const originalZh = i18n.global.getLocaleMessage('zh')
+    try {
+      i18n.global.setLocaleMessage('en', { home: { pageTitle: () => 'Home' } })
+      i18n.global.setLocaleMessage('zh', { home: { pageTitle: () => '首页' } })
+      const route = router.resolve('/home')
+      i18n.global.locale.value = 'en'
+      expect(resolveRouteDocumentTitle(route, 'Example')).toBe('Home - Example')
+      i18n.global.locale.value = 'zh'
+      expect(resolveRouteDocumentTitle(route, 'Example')).toBe('首页 - Example')
+    } finally {
+      i18n.global.setLocaleMessage('en', originalEn)
+      i18n.global.setLocaleMessage('zh', originalZh)
+      i18n.global.locale.value = locale
+    }
   })
 })

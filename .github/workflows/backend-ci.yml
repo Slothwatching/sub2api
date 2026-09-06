@@ -64,7 +64,7 @@ jobs:
         run: make test-frontend
       - name: Theme, localization and layout regressions
         working-directory: frontend
-        run: pnpm exec vitest run src/utils/__tests__/theme.spec.ts src/utils/__tests__/branding.spec.ts src/components/common/__tests__/ThemeToggle.spec.ts src/views/__tests__/HomeView.compact.spec.ts
+        run: pnpm exec vitest run src/utils/__tests__/theme.spec.ts src/utils/__tests__/branding.spec.ts src/components/common/__tests__/ThemeToggle.spec.ts src/views/__tests__/HomeView.compact.spec.ts src/router/__tests__/title.spec.ts
       - name: Production frontend build
         working-directory: frontend
         run: pnpm run build
