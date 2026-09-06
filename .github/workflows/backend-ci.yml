@@ -150,44 +150,11 @@ jobs:
   deploy:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: [release-ready, image]
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    environment: production
-    concurrency:
-      group: sub9api-production
-      cancel-in-progress: false
     permissions:
       contents: read
+      actions: read
       id-token: write
-    steps:
-      - name: Sign in with the production federated identity
-        uses: azure/login@v2
-        with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}
-          tenant-id: ${{ vars.AZURE_TENANT_ID }}
-          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-      - name: Deploy immutable image with server-side backup and health checks
-        env:
-          IMAGE_DIGEST: ${{ needs.image.outputs.digest }}
-          SOURCE_SHA: ${{ github.sha }}
-          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
-          VM_NAME: ${{ vars.AZURE_VM_NAME }}
-        run: |
-          set -euo pipefail
-          [[ "$IMAGE_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]
-          [[ "$SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]
-          script="/opt/sub9api/bin/deploy.sh ghcr.io/slothwatching/sub9api@$IMAGE_DIGEST $SOURCE_SHA"
-          az vm run-command invoke --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" \
-            --command-id RunShellScript --scripts "$script" --output json > result.json
-          python3 - <<'PYCODE'
-          import json
-          result = json.load(open('result.json'))
-          messages = '\n'.join(v.get('message', '') for v in result.get('value', []))
-          print(messages)
-          if 'SUB9API_DEPLOY_OK' not in messages:
-              raise SystemExit('Server did not confirm a healthy deployment')
-          PYCODE
-      - name: Check public HTTPS
-        env:
-          SITE_URL: ${{ vars.SITE_URL }}
-        run: curl --fail --silent --show-error --retry 6 --retry-delay 10 "$SITE_URL/health"
+    uses: ./.github/workflows/deploy-azure.yml
+    with:
+      image_digest: ${{ needs.image.outputs.digest }}
+      source_sha: ${{ github.sha }}

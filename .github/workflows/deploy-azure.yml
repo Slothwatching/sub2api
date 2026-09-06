@@ -1,0 +1,88 @@
+name: Deploy verified Azure release
+
+on:
+  workflow_call:
+    inputs:
+      image_digest:
+        type: string
+        required: true
+      source_sha:
+        type: string
+        required: true
+  workflow_dispatch:
+    inputs:
+      image_digest:
+        description: 'Previously verified GHCR digest (sha256:...)'
+        type: string
+        required: true
+      source_sha:
+        description: 'Full main-branch commit SHA'
+        type: string
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+  id-token: write
+
+jobs:
+  production:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production
+    concurrency:
+      group: sub9api-production
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Require a verified main-branch revision
+        env:
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          IMAGE_DIGEST: ${{ inputs.image_digest }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]
+          [[ "$IMAGE_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]
+          git merge-base --is-ancestor "$SOURCE_SHA" origin/main
+          for attempt in $(seq 1 12); do
+            passed=$(gh api "repos/$GITHUB_REPOSITORY/commits/$SOURCE_SHA/check-runs" --jq '[.check_runs[] | select(.name == "release-ready" and .conclusion == "success")] | length')
+            if [ "$passed" -gt 0 ]; then exit 0; fi
+            sleep 5
+          done
+          echo 'The requested revision has no successful release-ready check.' >&2
+          exit 1
+      - name: Sign in with the production federated identity
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Deploy immutable image with server-side backup and health checks
+        env:
+          IMAGE_DIGEST: ${{ inputs.image_digest }}
+          SOURCE_SHA: ${{ inputs.source_sha }}
+          RESOURCE_GROUP: ${{ vars.AZURE_RESOURCE_GROUP }}
+          VM_NAME: ${{ vars.AZURE_VM_NAME }}
+        run: |
+          set -euo pipefail
+          [[ "$IMAGE_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]
+          [[ "$SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]
+          script="/opt/sub9api/bin/deploy.sh ghcr.io/slothwatching/sub9api@$IMAGE_DIGEST $SOURCE_SHA"
+          az vm run-command invoke --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" \
+            --command-id RunShellScript --scripts "$script" --output json > result.json
+          python3 - <<'PYCODE'
+          import json
+          result = json.load(open('result.json'))
+          messages = '\n'.join(v.get('message', '') for v in result.get('value', []))
+          print(messages)
+          if 'SUB9API_DEPLOY_OK' not in messages:
+              raise SystemExit('Server did not confirm a healthy deployment')
+          PYCODE
+      - name: Check public HTTPS
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: curl --fail --silent --show-error --retry 6 --retry-delay 10 "$SITE_URL/health"
