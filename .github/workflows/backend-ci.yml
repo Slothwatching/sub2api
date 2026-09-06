@@ -108,6 +108,9 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Record database migration compatibility
+        id: schema
+        run: echo "fingerprint=$(find backend/migrations -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
       - name: Build the exact application revision
         id: build
         uses: docker/build-push-action@v6
@@ -119,6 +122,7 @@ jobs:
           labels: |
             org.opencontainers.image.source=https://github.com/Slothwatching/sub9api
             org.opencontainers.image.revision=${{ github.sha }}
+            io.sub9api.migrations=${{ steps.schema.outputs.fingerprint }}
           build-args: |
             COMMIT=${{ github.sha }}
             GOPROXY=https://proxy.golang.org,direct
