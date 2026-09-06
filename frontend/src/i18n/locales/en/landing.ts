@@ -5,6 +5,7 @@ export default {
   },
   // Home Page
   home: {
+    pageTitle: 'Home',
     autoTheme: 'Auto',
     followSystem: 'Follow system appearance',
     workspace: {
