@@ -1,5 +1,6 @@
 export default {
   dashboard: {
+    chart: { cacheCreation: 'Cache Creation', cacheRead: 'Cache Read', cacheHitRate: 'Cache Hit Rate' },
     title: 'Dashboard',
     welcomeMessage: "Welcome back! Here's an overview of your account.",
     balance: 'Balance',

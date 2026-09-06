@@ -1,13 +1,16 @@
 <template>
   <div class="table-page-layout" :class="{ 'mobile-mode': isMobile }">
+    <div class="table-workbench">
     <!-- 固定区域：操作按钮 -->
-    <div v-if="$slots.actions" class="layout-section-fixed">
+    <div v-if="$slots.actions" class="layout-section-fixed workbench-actions">
       <slot name="actions" />
     </div>
 
     <!-- 固定区域：搜索和过滤器 -->
-    <div v-if="$slots.filters" class="layout-section-fixed">
+    <div v-if="$slots.filters" class="layout-section-fixed workbench-filters">
       <slot name="filters" />
+    </div>
+
     </div>
 
     <!-- 滚动区域：表格 -->
@@ -47,7 +50,9 @@ onUnmounted(() => {
 /* 桌面端：Flexbox 布局 */
 .table-page-layout {
   @apply flex flex-col gap-6;
-  height: calc(100vh - 64px - 4rem); /* 减去 header + lg:p-8 的上下padding */
+  height: auto; /* header and app-main padding */
+  min-height: 420px;
+  min-width: 0;
 }
 
 .layout-section-fixed {
@@ -105,4 +110,8 @@ onUnmounted(() => {
   display: table;
   min-width: 100%;
 }
+
+.table-page-layout.mobile-mode { height: auto; min-height: 0; }
+.layout-section-fixed { min-width: 0; }
+.table-scroll-container :deep(td) { font-variant-numeric: tabular-nums; }
 </style>

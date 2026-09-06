@@ -2,7 +2,9 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -52,7 +54,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
           cache: 'pnpm'
           cache-dependency-path: frontend/pnpm-lock.yaml
       - name: Install frontend dependencies
@@ -60,6 +62,12 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Frontend typecheck and critical vitest
         run: make test-frontend
+      - name: Theme, localization and layout regressions
+        working-directory: frontend
+        run: pnpm exec vitest run src/utils/__tests__/theme.spec.ts src/utils/__tests__/branding.spec.ts src/components/common/__tests__/ThemeToggle.spec.ts src/views/__tests__/HomeView.compact.spec.ts
+      - name: Production frontend build
+        working-directory: frontend
+        run: pnpm run build
 
   golangci-lint:
     runs-on: ubuntu-latest
@@ -80,3 +88,73 @@ jobs:
           version: v2.13
           args: --timeout=30m
           working-directory: backend
+
+  security:
+    uses: ./.github/workflows/security-scan.yml
+
+  image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      digest: ${{ steps.build.outputs.digest }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Record database migration compatibility
+        id: schema
+        run: echo "fingerprint=$(find backend/migrations -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
+      - name: Build the exact application revision
+        id: build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          push: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' }}
+          tags: ghcr.io/slothwatching/sub9api:sha-${{ github.sha }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/Slothwatching/sub9api
+            org.opencontainers.image.revision=${{ github.sha }}
+            io.sub9api.migrations=${{ steps.schema.outputs.fingerprint }}
+          build-args: |
+            COMMIT=${{ github.sha }}
+            GOPROXY=https://proxy.golang.org,direct
+            GOSUMDB=sum.golang.org
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  release-ready:
+    if: always()
+    needs: [shell, test, frontend, golangci-lint, security, image]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every verification job to succeed
+        env:
+          RESULTS: ${{ toJSON(needs) }}
+        run: |
+          python3 - <<'PYCODE'
+          import json, os
+          results = json.loads(os.environ['RESULTS'])
+          failed = [name for name, job in results.items() if job['result'] != 'success']
+          if failed:
+              raise SystemExit('Required checks failed: ' + ', '.join(failed))
+          PYCODE
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: [release-ready, image]
+    permissions:
+      contents: read
+      actions: read
+      id-token: write
+    uses: ./.github/workflows/deploy-azure.yml
+    with:
+      image_digest: ${{ needs.image.outputs.digest }}
+      source_sha: ${{ github.sha }}

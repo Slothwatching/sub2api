@@ -1,6 +1,9 @@
 <template>
   <aside
     class="sidebar"
+    ref="sidebarElement"
+    :inert="isNarrow && !mobileOpen"
+    @keydown="handleNavigationKey"
     :class="[
       sidebarCollapsed ? 'w-[72px]' : 'w-64',
       { '-translate-x-full lg:translate-x-0': !mobileOpen }
@@ -14,7 +17,7 @@
         class="sidebar-logo flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl shadow-glow transition-opacity hover:opacity-80"
         @click="handleMenuItemClick(homePath)"
       >
-        <img v-if="settingsLoaded" :src="siteLogo || '/logo.svg'" alt="Logo" class="h-full w-full object-contain" />
+        <img v-if="settingsLoaded" :src="siteLogo || '/brand-mark.svg'" alt="Logo" class="h-full w-full object-contain" />
       </router-link>
       <div class="sidebar-brand" :class="{ 'sidebar-brand-collapsed': sidebarCollapsed }" :aria-hidden="sidebarCollapsed ? 'true' : 'false'">
         <router-link
@@ -30,7 +33,7 @@
     </div>
 
     <!-- Navigation -->
-    <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide">
+    <nav ref="sidebarNavRef" class="sidebar-nav scrollbar-hide" :aria-label="t('home.workspace.navigation')">
       <!-- Admin View: Admin menu first, then personal menu -->
       <template v-if="isAdmin">
         <!-- Admin Section -->
@@ -147,8 +150,10 @@
       </template>
     </nav>
 
+    <div v-if="!isAdmin" class="workspace-nav-version"><VersionBadge :version="siteVersion" /></div>
+
     <!-- Bottom Section -->
-    <div class="mt-auto border-t border-gray-100 p-3 dark:border-dark-800">
+    <div class="sidebar-tools mt-auto border-t border-gray-100 p-3 dark:border-dark-800">
       <!-- Theme Toggle -->
       <button
         @click="toggleTheme"
@@ -196,6 +201,7 @@ import VersionBadge from '@/components/common/VersionBadge.vue'
 import Icon from '@/components/icons/Icon.vue'
 import { sanitizeSvg } from '@/utils/sanitize'
 import { sanitizeUrl } from '@/utils/url'
+import { useThemeAppearance } from '@/composables/useThemeAppearance'
 import { FeatureFlags, makeSidebarFlag } from '@/utils/featureFlags'
 import { useBatchImageAccess } from '@/composables/useBatchImageAccess'
 
@@ -249,7 +255,31 @@ const sidebarCollapsed = computed(() => appStore.sidebarCollapsed)
 const mobileOpen = computed(() => appStore.mobileOpen)
 const isAdmin = computed(() => authStore.isAdmin)
 const sidebarNavRef = ref<HTMLElement | null>(null)
-const isDark = ref(document.documentElement.classList.contains('dark'))
+const sidebarElement = ref<HTMLElement | null>(null)
+const isNarrow = ref(window.innerWidth < 1024)
+let navigationTrigger: HTMLElement | null = null
+function updateNavigationViewport() { isNarrow.value = window.innerWidth < 1024 }
+function handleNavigationKey(event: KeyboardEvent) {
+  if (!isNarrow.value || !mobileOpen.value) return
+  if (event.key === 'Escape') { event.preventDefault(); closeMobile(); return }
+  if (event.key !== 'Tab') return
+  const elements = [...(sidebarElement.value?.querySelectorAll<HTMLElement>('a[href],button:not(:disabled),[tabindex="0"]') ?? [])].filter(el => el.getClientRects().length && getComputedStyle(el).visibility !== 'hidden')
+  const first = elements[0], last = elements[elements.length - 1]
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus() }
+  else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus() }
+}
+watch([mobileOpen, isNarrow], async ([open, narrow]) => {
+  document.body.classList.toggle('workspace-nav-open', open && narrow)
+  if (open && narrow) {
+    navigationTrigger = document.activeElement as HTMLElement
+    await nextTick()
+    sidebarElement.value?.querySelector<HTMLElement>('a[href],button')?.focus()
+  } else { navigationTrigger?.focus(); navigationTrigger = null }
+})
+onMounted(() => window.addEventListener('resize', updateNavigationViewport))
+onBeforeUnmount(() => { window.removeEventListener('resize', updateNavigationViewport); document.body.classList.remove('workspace-nav-open') })
+
+const { isDark, toggleTheme } = useThemeAppearance()
 
 const homePath = computed(() => (isAdmin.value ? '/admin/dashboard' : '/dashboard'))
 
@@ -848,12 +878,6 @@ function toggleSidebar() {
   appStore.toggleSidebar()
 }
 
-function toggleTheme() {
-  isDark.value = !isDark.value
-  document.documentElement.classList.toggle('dark', isDark.value)
-  localStorage.setItem('theme', isDark.value ? 'dark' : 'light')
-}
-
 function closeMobile() {
   appStore.setMobileOpen(false)
 }
@@ -915,16 +939,6 @@ function handleGroupClick(item: NavItem) {
     router.push(item.path)
   }
   groupExpandOverrides.value.set(item.path, true)
-}
-
-// Initialize theme
-const savedTheme = localStorage.getItem('theme')
-if (
-  savedTheme === 'dark' ||
-  (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)
-) {
-  isDark.value = true
-  document.documentElement.classList.add('dark')
 }
 
 // Fetch admin settings (for feature-gated nav items like Ops).
