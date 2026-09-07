@@ -12,7 +12,7 @@
           <label class="min-w-0 space-y-2 text-sm"><span>{{ t('commercial.connect.endpoint') }}</span><select v-model="endpoint" class="input"><option v-for="ep in endpoints" :key="ep.endpoint" :value="ep.endpoint">{{ ep.name || ep.endpoint }}</option></select></label>
         </div>
         <p v-if="!selectedKey" class="text-sm text-gray-500 dark:text-dark-300">{{ t('commercial.connect.preview') }}</p>
-        <p v-if="auth.isAuthenticated && !loading && !usableKeys.length" class="text-sm">{{ t('commercial.connect.noKeys') }} <RouterLink to="/keys" class="underline">{{ t('commercial.connect.keys') }}</RouterLink></p>
+        <p v-if="auth.isAuthenticated && !loading && !loadFailed && !usableKeys.length" class="text-sm">{{ t('commercial.connect.noKeys') }} <RouterLink to="/keys" class="underline">{{ t('commercial.connect.keys') }}</RouterLink></p>
         <ol class="list-inside list-decimal space-y-2 text-sm text-gray-600 dark:text-dark-300"><li v-for="n in 3" :key="n">{{ t(`commercial.connect.step${n}`) }}</li></ol>
       </div>
       <div class="card min-w-0 overflow-hidden p-5 sm:p-6"><UseKeyContent :show="true" :api-key="selectedKey?.key || 'YOUR_API_KEY'" :base-url="endpoint" :platform="platform" :allow-messages-dispatch="selectedKey?.group?.allow_messages_dispatch" /></div>
