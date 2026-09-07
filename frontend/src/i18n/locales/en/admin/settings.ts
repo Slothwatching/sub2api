@@ -604,8 +604,8 @@ export default {
         siteNamePlaceholder: 'Sub2API',
         siteNameHint: 'Displayed in emails and page titles',
         siteSubtitle: 'Site Subtitle',
-        siteSubtitlePlaceholder: 'Subscription to API Conversion Platform',
-        siteSubtitleHint: 'Displayed on login and register pages',
+        siteSubtitlePlaceholder: 'Your site introduction (optional)',
+        siteSubtitleHint: 'Custom text on home and sign-in pages. Leave empty for the localized home introduction.',
         apiBaseUrl: 'API Base URL',
         apiBaseUrlPlaceholder: 'https://api.example.com',
         apiBaseUrlHint:

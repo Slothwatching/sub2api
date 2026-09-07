@@ -82,6 +82,20 @@ func TestSettingService_GetPublicSettings_ExposesTablePreferences(t *testing.T) 
 	require.Equal(t, []int{20, 50, 100}, settings.TablePageSizeOptions)
 }
 
+func TestSettingService_GetPublicSettings_PreservesEmptyAndCustomSubtitle(t *testing.T) {
+	for _, subtitle := range []string{"", "Custom brand introduction"} {
+		t.Run(subtitle, func(t *testing.T) {
+			svc := NewSettingService(&settingPublicRepoStub{values: map[string]string{
+				SettingKeySiteSubtitle: subtitle,
+			}}, &config.Config{})
+			settings, err := svc.GetPublicSettings(context.Background())
+			require.NoError(t, err)
+			require.Equal(t, subtitle, settings.SiteSubtitle)
+			require.Equal(t, subtitle, svc.parseSettings(map[string]string{SettingKeySiteSubtitle: subtitle}).SiteSubtitle)
+		})
+	}
+}
+
 func TestSettingService_GetPublicSettings_ExposesCompactHomeEnabled(t *testing.T) {
 	repo := &settingPublicRepoStub{
 		values: map[string]string{

@@ -9565,7 +9565,7 @@ const form = reactive<SettingsForm>({
   site_name: "Sub2API",
   site_logo: "",
   community_links: [],
-  site_subtitle: "Subscription to API Conversion Platform",
+  site_subtitle: "",
   api_base_url: "",
   contact_info: "",
   doc_url: "",
