@@ -6563,6 +6563,8 @@
                 />
               </div>
 
+              <CommunitySettings v-model="form.community_links" />
+
               <!-- Home Content -->
               <div>
                 <label
@@ -8809,6 +8811,8 @@ import GroupBadge from "@/components/common/GroupBadge.vue";
 import GroupOptionItem from "@/components/common/GroupOptionItem.vue";
 import Toggle from "@/components/common/Toggle.vue";
 import ProxySelector from "@/components/common/ProxySelector.vue";
+import { communityValidationError } from "@/utils/community";
+import CommunitySettings from "@/components/community/CommunitySettings.vue";
 import ImageUpload from "@/components/common/ImageUpload.vue";
 import BackupSettings from "@/views/admin/BackupView.vue";
 import EmailTemplateEditor from "@/views/admin/settings/EmailTemplateEditor.vue";
@@ -9560,6 +9564,7 @@ const form = reactive<SettingsForm>({
   default_user_rpm_limit: 0,
   site_name: "Sub2API",
   site_logo: "",
+  community_links: [],
   site_subtitle: "Subscription to API Conversion Platform",
   api_base_url: "",
   contact_info: "",
@@ -11004,6 +11009,8 @@ function findDuplicateDefaultSubscription(
 }
 
 async function saveSettings() {
+  const communityError = communityValidationError(form.community_links ?? []);
+  if (communityError) { appStore.showError(t(communityError)); return; }
   saving.value = true;
   try {
     const normalizedTableDefaultPageSize = Math.floor(
@@ -11204,6 +11211,7 @@ async function saveSettings() {
       table_page_size_options: form.table_page_size_options,
       custom_menu_items: form.custom_menu_items,
       custom_endpoints: form.custom_endpoints,
+      community_links: form.community_links ?? [],
       frontend_url: form.frontend_url,
       smtp_host: form.smtp_host,
       smtp_port: form.smtp_port,

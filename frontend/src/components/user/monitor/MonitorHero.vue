@@ -61,7 +61,7 @@ import { useI18n } from 'vue-i18n'
 import Icon from '@/components/icons/Icon.vue'
 import AutoRefreshButton from '@/components/common/AutoRefreshButton.vue'
 export type MonitorWindow = '7d' | '15d' | '30d'
-export type OverallStatus = 'operational' | 'degraded'
+export type OverallStatus = 'operational' | 'degraded' | 'empty' | 'loading' | 'error'
 
 const props = defineProps<{
   overallStatus: OverallStatus
@@ -91,7 +91,7 @@ const windowOptions = computed<{ value: MonitorWindow; label: string }[]>(() => 
   { value: '30d', label: t('channelStatus.windowTab.30d') },
 ])
 
-const overallLabel = computed(() => t(`channelStatus.overall.${props.overallStatus}`))
+const overallLabel = computed(() => t(`commercial.status.${props.overallStatus}`))
 
 const overallChipClass = computed(() => {
   switch (props.overallStatus) {

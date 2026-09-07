@@ -65,6 +65,9 @@ jobs:
       - name: Theme, localization and layout regressions
         working-directory: frontend
         run: pnpm exec vitest run src/utils/__tests__/theme.spec.ts src/utils/__tests__/branding.spec.ts src/components/common/__tests__/ThemeToggle.spec.ts src/views/__tests__/HomeView.compact.spec.ts src/router/__tests__/title.spec.ts
+      - name: Commercial onboarding and community regressions
+        working-directory: frontend
+        run: pnpm exec vitest run src/components/community/__tests__ src/components/keys/__tests__/UseKeyModal.spec.ts src/views/user/__tests__/CommercialExperience.spec.ts src/views/user/__tests__/ChannelStatusV1.states.spec.ts src/views/user/__tests__/ChannelStatusV2.states.spec.ts src/i18n/__tests__/localesMessageCompile.spec.ts src/i18n/__tests__/localesNoKeyCollision.spec.ts
       - name: Production frontend build
         working-directory: frontend
         run: pnpm run build

@@ -446,6 +446,9 @@ func diffSettings(before *service.SystemSettings, after *service.SystemSettings,
 	if before.CustomMenuItems != after.CustomMenuItems {
 		changed = append(changed, "custom_menu_items")
 	}
+	if before.CommunityLinks != after.CommunityLinks {
+		changed = append(changed, "community_links")
+	}
 	if before.CustomEndpoints != after.CustomEndpoints {
 		changed = append(changed, "custom_endpoints")
 	}
