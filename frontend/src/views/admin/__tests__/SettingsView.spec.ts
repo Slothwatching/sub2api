@@ -1059,6 +1059,28 @@ describe("admin SettingsView payment visible method controls", () => {
     }
   });
 
+  it("loads community settings and preserves their order in the save payload", async () => {
+    const communities = [{ id: "qa-two", platform: "Chat", name: "QA community", name_en: "", qr_code: "", account: "test-only", url: "", status: "open", enabled: true }];
+    getSettings.mockResolvedValueOnce({ ...baseSettingsResponse, community_links: communities });
+    const wrapper = mountView();
+    await flushPromises();
+    await wrapper.find("form").trigger("submit.prevent");
+    await flushPromises();
+    expect(updateSettings).toHaveBeenCalledWith(expect.objectContaining({ community_links: communities }));
+    wrapper.unmount();
+  });
+
+  it("rejects unsafe community invitations before submitting settings", async () => {
+    getSettings.mockResolvedValueOnce({ ...baseSettingsResponse, community_links: [{ id: "qa", platform: "Chat", name: "QA", name_en: "", qr_code: "", account: "", url: "javascript:alert(1)", status: "open", enabled: true }] });
+    const wrapper = mountView();
+    await flushPromises();
+    await wrapper.find("form").trigger("submit.prevent");
+    await flushPromises();
+    expect(updateSettings).not.toHaveBeenCalled();
+    expect(showError).toHaveBeenCalledWith(expect.stringContaining("commercial.community.linkError"));
+    wrapper.unmount();
+  });
+
   it("does not submit legacy visible payment method settings", async () => {
     const wrapper = mountView();
 
