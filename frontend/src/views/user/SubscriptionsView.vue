@@ -1,6 +1,7 @@
 <template>
   <AppLayout>
     <div class="space-y-6">
+      <BillingExplanation />
       <!-- Loading State -->
       <div v-if="loading" class="flex justify-center py-12">
         <div
@@ -248,6 +249,7 @@
 </template>
 
 <script setup lang="ts">
+import BillingExplanation from "@/components/user/BillingExplanation.vue"
 import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'

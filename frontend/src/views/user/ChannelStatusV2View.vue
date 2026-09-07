@@ -1,6 +1,7 @@
 <template>
   <AppLayout>
     <div class="space-y-6 pb-12">
+      <div class="card space-y-2 p-4" role="status"><p class="text-sm">{{ t("commercial.status.note") }}</p><p v-if="loadFailed" class="text-amber-700 dark:text-amber-300">{{ t("commercial.status.stale") }}</p></div>
       <!-- Ops-style elevated shell: title toolbar + filters (mirrors OpsDashboardHeader) -->
       <section
         class="card sticky top-0 z-20 !rounded-3xl !border-0 p-0 shadow-sm ring-1 ring-gray-900/5 backdrop-blur-sm dark:!bg-dark-800 dark:ring-dark-700 supports-[backdrop-filter]:bg-white/95 dark:supports-[backdrop-filter]:bg-dark-800/95"
@@ -17,17 +18,18 @@
               <span class="relative flex h-2 w-2 shrink-0">
                 <span
                   class="relative inline-flex h-2 w-2 rounded-full"
-                  :class="loading || refreshing ? 'bg-gray-400' : 'bg-green-500'"
+                  :class="loading || refreshing || loadFailed || !snapshot?.coverage.data_through ? 'bg-gray-400' : 'bg-green-500'"
                 ></span>
               </span>
               <span v-if="refreshing" class="inline-flex items-center gap-1 text-primary-600 dark:text-primary-300">
                 <LoadingSpinner size="sm" />
                 {{ t('channelMonitorV2.updating') }}
               </span>
+              <span v-else-if="loadFailed">{{ t('commercial.status.error') }}</span>
               <span v-else-if="snapshot?.coverage.data_through">
                 {{ t('channelMonitorV2.updatedTo', { time: formatTime(snapshot.coverage.data_through) }) }}
               </span>
-              <span v-else class="text-gray-400">{{ t('common.loading') }}</span>
+              <span v-else class="text-gray-400">{{ t(loading ? 'commercial.status.loading' : 'commercial.status.empty') }}</span>
               <span
                 v-if="snapshot && !snapshot.coverage.coverage_complete && !bootstrapActive"
                 class="badge badge-warning"
@@ -555,6 +557,7 @@ const matrix = ref<MonitorMatrixResponse | null>(null)
 const modelRows = ref<MonitorModelRow[]>([])
 const errorRows = ref<MonitorErrorRow[]>([])
 const userRows = ref<MonitorUserRow[]>([])
+const loadFailed = ref(false)
 const loading = ref(false)
 const tabLoading = ref(false)
 const refreshing = ref(false)
@@ -731,8 +734,10 @@ async function reload(silent = true) {
       loadDimensions(request.signal, id),
       loadMetrics(request.signal, id),
     ])
+    if (id === sequence) loadFailed.value = false
   } catch (error) {
-    if ((error as { name?: string }).name !== 'CanceledError') {
+    if (id === sequence && (error as { name?: string }).name !== 'CanceledError') {
+      loadFailed.value = true
       appStore.showError(extractApiErrorMessage(error, t('channelMonitorV2.loadFailed')))
     }
   } finally {
@@ -754,8 +759,10 @@ async function reloadMetricsOnly(silent = true) {
   if (!silent) loading.value = true
   try {
     await loadMetrics(request.signal, id)
+    if (id === sequence) loadFailed.value = false
   } catch (error) {
-    if ((error as { name?: string }).name !== 'CanceledError') {
+    if (id === sequence && (error as { name?: string }).name !== 'CanceledError') {
+      loadFailed.value = true
       appStore.showError(extractApiErrorMessage(error, t('channelMonitorV2.loadFailed')))
     }
   } finally {

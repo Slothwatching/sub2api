@@ -1,7 +1,8 @@
 <template>
   <AppLayout>
+    <div class="card mb-4 space-y-2 p-4" role="status"><p class="font-medium">{{ t(`commercial.status.${displayStatus}`) }}</p><p class="text-sm text-gray-500 dark:text-dark-300">{{ t("commercial.status.note") }}</p><p v-if="loadFailed" class="text-sm">{{ t("commercial.status.stale") }}</p><p v-if="lastChecked" class="text-xs">{{ t("commercial.status.updated", { time: lastChecked }) }}</p></div>
     <MonitorHero
-      :overall-status="overallStatus"
+      :overall-status="displayStatus"
       :interval-seconds="DEFAULT_INTERVAL_SECONDS"
       :window="currentWindow"
       :loading="loading"
@@ -54,7 +55,10 @@ const appStore = useAppStore()
 
 // ── State ──
 const items = ref<UserMonitorView[]>([])
-const loading = ref(false)
+const loading = ref(true)
+const loadFailed = ref(false)
+const displayStatus = computed(() => loading.value ? 'loading' : loadFailed.value ? 'error' : !items.value.length ? 'empty' : overallStatus.value)
+const lastChecked = computed(() => { const dates = items.value.flatMap(item => item.timeline ?? []).map(point => point.checked_at).filter(Boolean).sort(); return dates.length ? new Date(dates[dates.length - 1]).toLocaleString() : '' })
 const currentWindow = ref<MonitorWindow>('7d')
 const detailCache = reactive<Record<number, UserMonitorDetail>>({})
 const showDetail = ref(false)
@@ -73,7 +77,7 @@ const countdown = autoRefresh.countdown
 
 // ── Computed ──
 const overallStatus = computed<OverallStatus>(() => {
-  if (items.value.length === 0) return 'operational'
+  if (items.value.length === 0) return 'empty'
   for (const it of items.value) {
     if (it.primary_status === 'failed' || it.primary_status === 'error') return 'degraded'
     if (it.primary_status !== STATUS_OPERATIONAL) return 'degraded'
@@ -95,9 +99,11 @@ async function reload(silent = false) {
     const res = await listChannelMonitorViews({ signal: ctrl.signal })
     if (ctrl.signal.aborted || abortController !== ctrl) return
     items.value = res.items || []
+    loadFailed.value = false
   } catch (err: unknown) {
     const e = err as { name?: string; code?: string }
     if (e?.name === 'AbortError' || e?.code === 'ERR_CANCELED') return
+    loadFailed.value = true
     appStore.showError(extractApiErrorMessage(err, t('channelStatus.loadError')))
   } finally {
     if (abortController === ctrl) {
@@ -122,6 +128,7 @@ async function loadDetail(id: number, force = false) {
   try {
     detailCache[id] = await fetchChannelMonitorDetail(id)
   } catch (err: unknown) {
+    loadFailed.value = true
     appStore.showError(extractApiErrorMessage(err, t('channelStatus.detailLoadError')))
   }
 }

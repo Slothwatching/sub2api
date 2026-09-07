@@ -29,6 +29,8 @@ const routes: RouteRecordRaw[] = [
     }
   },
 
+  { path: "/connect", name: "Connect", component: () => import("@/views/user/ConnectView.vue"), meta: { requiresAuth: false, title: "Connection center", titleKey: "commercial.connect.title" } },
+
   // ==================== Public Routes ====================
   {
     path: '/home',

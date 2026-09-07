@@ -195,6 +195,18 @@ export interface CustomMenuItem {
   sort_order: number
 }
 
+export interface CommunityLink {
+  id: string
+  platform: string
+  name: string
+  name_en: string
+  qr_code: string
+  account: string
+  url: string
+  status: 'open' | 'full' | 'paused'
+  enabled: boolean
+}
+
 export interface CustomEndpoint {
   name: string
   endpoint: string
@@ -245,6 +257,7 @@ export interface PublicSettings {
   table_default_page_size: number
   table_page_size_options: number[]
   custom_menu_items: CustomMenuItem[]
+  community_links?: CommunityLink[]
   custom_endpoints: CustomEndpoint[]
   linuxdo_oauth_enabled: boolean
   dingtalk_oauth_enabled?: boolean
