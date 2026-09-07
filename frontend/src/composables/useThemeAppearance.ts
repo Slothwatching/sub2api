@@ -4,8 +4,8 @@ import { readThemePreference, saveThemePreference } from '@/utils/theme'
 /** Observe the existing document theme; do not introduce another preference store. */
 export function useThemeAppearance() {
   const isDark = ref(document.documentElement.classList.contains('dark'))
-  const isAutomatic = ref(!readThemePreference())
-  const syncPreference = () => { isAutomatic.value = !readThemePreference() }
+  const isAutomatic = ref(readThemePreference() === 'system')
+  const syncPreference = () => { isAutomatic.value = readThemePreference() === 'system' }
   let observer: MutationObserver | undefined
 
   onMounted(() => {
@@ -25,5 +25,5 @@ export function useThemeAppearance() {
     isDark.value = next
   }
 
-  return { isDark, isAutomatic, toggleTheme, followSystem: () => { saveThemePreference(null); syncPreference() } }
+  return { isDark, isAutomatic, toggleTheme, followSystem: () => { saveThemePreference('system'); syncPreference() } }
 }

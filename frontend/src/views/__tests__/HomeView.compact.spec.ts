@@ -115,6 +115,13 @@ describe('HomeView compact mode', () => {
     expect(compactDestination(mountHome({ compact_home_enabled: true }))).toBe('/login')
   })
 
+  it('limits default-home model promotion to Claude and GPT while preserving configured branding', () => {
+    const wrapper = mountHome()
+    expect(wrapper.get('.home-provider-list').findAll('span').map(item => item.text())).toEqual(['home.providers.claude', 'GPT'])
+    expect(wrapper.get('.home-lead').text()).toBe('Test subtitle')
+    wrapper.unmount()
+  })
+
   it('links authenticated users to their dashboard', () => {
     authStore.isAuthenticated = true
 

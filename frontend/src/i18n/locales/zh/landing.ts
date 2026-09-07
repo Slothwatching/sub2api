@@ -12,8 +12,8 @@ export default {
       label: '工作空间',
       administration: '管理工作区',
       navigation: '主导航',
-      eyebrow: '让 AI 接入井然有序',
-      defaultSubtitle: '在一处，清晰管理你的模型、密钥与使用情况。',
+      eyebrow: '让 Claude 与 GPT 融入你的工作流',
+      defaultSubtitle: '连接常用工具，用 Claude 与 GPT 构建应用，让每一次使用清晰可控。',
       guideTitle: '从接入，到第一次调用',
       step1Title: '创建 API 密钥',
       step1Description: '选择可用分组，并设置适合自己的额度限制。',
@@ -37,9 +37,9 @@ export default {
     heroSubtitle: '一个密钥，畅用多个 AI 模型',
     heroDescription: '无需管理多个订阅账号，一站式接入 Claude、GPT、Gemini 等主流 AI 服务',
     tags: {
-      subscriptionToApi: '订阅转 API',
-      stickySession: '会话保持',
-      realtimeBilling: '按量计费'
+      subscriptionToApi: 'Claude 与 GPT 接入',
+      stickySession: '流式响应',
+      realtimeBilling: '用量透明'
     },
     // 用户痛点区块
     painPoints: {
@@ -69,12 +69,12 @@ export default {
       subtitle: '简单三步，开始省心使用 AI'
     },
     features: {
-      unifiedGateway: '一键接入',
-      unifiedGatewayDesc: '获取一个 API 密钥，即可调用所有已接入的 AI 模型，无需分别申请。',
-      multiAccount: '稳定可靠',
-      multiAccountDesc: '通过已有路由和调度能力管理接入，在控制台查看服务状态。',
-      balanceQuota: '用多少付多少',
-      balanceQuotaDesc: '查看实际费用、订阅与额度限制，清楚了解每一次调用。'
+      unifiedGateway: '为常用工具而构建',
+      unifiedGatewayDesc: '通过一个 API 密钥和清晰的配置指引，连接 Claude Code、Codex 与自己的应用。',
+      multiAccount: '让工作持续推进',
+      multiAccountDesc: '以流式输出逐步获取响应。在控制台查看请求记录，帮助定位调用中遇到的问题。',
+      balanceQuota: '每一次调用都有明细',
+      balanceQuotaDesc: '查看 Token 用量与费用明细，设置密钥限额，在一处管理可用余额。'
     },
     // 优势对比
     comparison: {

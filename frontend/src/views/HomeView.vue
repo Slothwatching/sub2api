@@ -149,9 +149,6 @@
         <div class="home-provider-list">
           <span>{{ t('home.providers.claude') }}</span>
           <span>GPT</span>
-          <span>{{ t('home.providers.gemini') }}</span>
-          <span>{{ t('home.providers.antigravity') }}</span>
-          <span>{{ t('home.providers.more') }}</span>
         </div>
       </section>
     </main>

@@ -12,8 +12,8 @@ export default {
       label: 'Workspace',
       administration: 'Administration',
       navigation: 'Main navigation',
-      eyebrow: 'A considered space for AI',
-      defaultSubtitle: 'Your models, keys and usage, thoughtfully organized.',
+      eyebrow: 'Claude & GPT for your workflow',
+      defaultSubtitle: 'Connect your tools. Build with Claude and GPT. Stay in control of your usage.',
       guideTitle: 'From access to your first request',
       step1Title: 'Create your API key',
       step1Description: 'Choose an available group and set a limit that works for you.',
@@ -37,9 +37,9 @@ export default {
     heroSubtitle: 'One Key, All AI Models',
     heroDescription: 'No need to manage multiple subscriptions. Access Claude, GPT, Gemini and more with a single API key',
     tags: {
-      subscriptionToApi: 'Subscription to API',
-      stickySession: 'Session Persistence',
-      realtimeBilling: 'Pay As You Go'
+      subscriptionToApi: 'Claude & GPT Access',
+      stickySession: 'Streaming Responses',
+      realtimeBilling: 'Transparent Usage'
     },
     // Pain points section
     painPoints: {
@@ -69,12 +69,12 @@ export default {
       subtitle: 'Three simple steps to stress-free AI access'
     },
     features: {
-      unifiedGateway: 'One-Click Access',
-      unifiedGatewayDesc: 'Get a single API key to call all connected AI models. No separate applications needed.',
-      multiAccount: 'Always Reliable',
-      multiAccountDesc: 'Manage access with existing routing and scheduling, and review service status in your dashboard.',
-      balanceQuota: 'Pay What You Use',
-      balanceQuotaDesc: 'Review actual costs, subscriptions and quota limits for a clear view of every request.'
+      unifiedGateway: 'Built for Your Tools',
+      unifiedGatewayDesc: 'Connect Claude Code, Codex and your applications with a single API key and clear setup guidance.',
+      multiAccount: 'Keep Your Work Moving',
+      multiAccountDesc: 'Receive responses as they stream. Review request records in your dashboard to help troubleshoot interruptions.',
+      balanceQuota: 'Every Request, Accounted For',
+      balanceQuotaDesc: 'See token usage and cost details, set key limits and manage your available balance in one place.'
     },
     // Comparison section
     comparison: {
