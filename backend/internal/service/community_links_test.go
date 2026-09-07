@@ -30,6 +30,15 @@ func TestCommunityLinksValidationAndVisibility(t *testing.T) {
 	if ValidateCommunityLinks([]CommunityLink{item}) == nil {
 		t.Fatal("accepted oversized image")
 	}
+	unicodeItem := base
+	unicodeItem.Platform = strings.Repeat("群", 40)
+	if err := ValidateCommunityLinks([]CommunityLink{unicodeItem}); err != nil {
+		t.Fatal("valid multilingual platform rejected", err)
+	}
+	unicodeItem.Platform += "群"
+	if ValidateCommunityLinks([]CommunityLink{unicodeItem}) == nil {
+		t.Fatal("overlong multilingual platform accepted")
+	}
 	disabled := base
 	disabled.ID = "disabled"
 	disabled.Enabled = false

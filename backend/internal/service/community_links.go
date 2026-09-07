@@ -41,7 +41,7 @@ func ValidateCommunityLinks(items []CommunityLink) error {
 			return fmt.Errorf("community IDs must be present and unique")
 		}
 		ids[item.ID] = true
-		if utf8.RuneCountInString(item.Name) > 80 || utf8.RuneCountInString(item.NameEN) > 80 || len(item.Platform) > 40 || len(item.Account) > 200 {
+		if utf8.RuneCountInString(item.Name) > 80 || utf8.RuneCountInString(item.NameEN) > 80 || utf8.RuneCountInString(item.Platform) > 40 || utf8.RuneCountInString(item.Account) > 200 {
 			return fmt.Errorf("community text is too long")
 		}
 		if item.Status != "open" && item.Status != "full" && item.Status != "paused" {
