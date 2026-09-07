@@ -36,7 +36,7 @@ import CommunitySection from '@/components/community/CommunitySection.vue'
 import BillingExplanation from '@/components/user/BillingExplanation.vue'
 const { t } = useI18n()
 const auth = useAuthStore(); const app = useAppStore()
-const keys = ref<ApiKey[]>([]); const keyID = ref(''); const genericPlatform = ref<GroupPlatform>('anthropic')
+const keys = ref<ApiKey[]>([]); const keyID = ref(''); const genericPlatform = ref<GroupPlatform>('openai')
 const loading = ref(false); const loadFailed = ref(false)
 const endpoints = computed(() => [{ name: app.siteName, endpoint: app.cachedPublicSettings?.api_base_url || window.location.origin }, ...(app.cachedPublicSettings?.custom_endpoints ?? [])])
 const endpoint = ref(endpoints.value[0].endpoint)

@@ -12,16 +12,21 @@ export default {
       label: 'Workspace',
       administration: 'Administration',
       navigation: 'Main navigation',
-      eyebrow: 'Claude & GPT for your workflow',
-      defaultSubtitle: 'Connect your tools. Build with Claude and GPT. Stay in control of your usage.',
-      guideTitle: 'From access to your first request',
+      eyebrow: 'Focused GPT & Codex access',
+      defaultSubtitle: 'Connect Codex and OpenAI-compatible tools through a focused GPT service, with streaming responses and transparent usage.',
+      guideTitle: 'From setup to your first GPT request',
       step1Title: 'Create your API key',
-      step1Description: 'Choose an available group and set a limit that works for you.',
+      step1Description: 'Choose an available GPT group and set a limit that works for you.',
       step2Title: 'Connect your tools',
-      step2Description: 'Use the key guide to configure Claude Code, Codex or your own application.',
+      step2Description: 'Use the key guide to configure Codex or your OpenAI-compatible application.',
       step3Title: 'Understand your usage',
       step3Description: 'Review requests, token usage and costs from your dashboard.',
-      providerNote: 'Model access and pricing depend on your available groups.',
+      providerNote: 'Available GPT models and pricing depend on your groups.',
+      supportEyebrow: 'Technical guidance',
+      supportTitle: 'Setup help when you need it',
+      supportDescription: 'Follow the connection center for configuration guidance and practical troubleshooting. When asking for help, share the request time, status code and model name—never your API key or prompt.',
+      supportPrimary: 'Open connection center',
+      supportDocs: 'Read documentation',
       notFoundDescription: 'This page may have moved, or the address may be incorrect.'
     },
     viewOnGithub: 'View on GitHub',
@@ -34,10 +39,10 @@ export default {
     getStarted: 'Get Started',
     goToDashboard: 'Go to Dashboard',
     // User-focused value proposition
-    heroSubtitle: 'One Key, All AI Models',
-    heroDescription: 'No need to manage multiple subscriptions. Access Claude, GPT, Gemini and more with a single API key',
+    heroSubtitle: 'Focused GPT access for development workflows',
+    heroDescription: 'Connect Codex and OpenAI-compatible tools with clear setup guidance, streaming responses and transparent usage.',
     tags: {
-      subscriptionToApi: 'Claude & GPT Access',
+      subscriptionToApi: 'GPT & Codex Access',
       stickySession: 'Streaming Responses',
       realtimeBilling: 'Transparent Usage'
     },
@@ -70,7 +75,7 @@ export default {
     },
     features: {
       unifiedGateway: 'Built for Your Tools',
-      unifiedGatewayDesc: 'Connect Claude Code, Codex and your applications with a single API key and clear setup guidance.',
+      unifiedGatewayDesc: 'Connect Codex and OpenAI-compatible applications with a single API key and clear setup guidance.',
       multiAccount: 'Keep Your Work Moving',
       multiAccountDesc: 'Receive responses as they stream. Review request records in your dashboard to help troubleshoot interruptions.',
       balanceQuota: 'Every Request, Accounted For',
@@ -113,8 +118,8 @@ export default {
       }
     },
     providers: {
-      title: 'Supported AI Models',
-      description: 'One API, Multiple Choices',
+      title: 'Focused GPT Access',
+      description: 'A focused service for GPT and Codex workflows',
       supported: 'Supported',
       soon: 'Soon',
       claude: 'Claude',
@@ -125,8 +130,8 @@ export default {
     // CTA section
     cta: {
       title: 'Ready to Get Started?',
-      description: 'Sign up now and get free trial credits to experience seamless AI access',
-      button: 'Sign Up Free'
+      description: 'Create an account, review available GPT access and follow the connection guide.',
+      button: 'Create Account'
     },
     footer: {
       allRightsReserved: 'All rights reserved.'
