@@ -26,7 +26,7 @@ export default {
     },
     "connect": {
       "title": "接入中心",
-      "subtitle": "选择工具和系统，使用现有配置指南连接你的工作流。",
+      "subtitle": "选择工具与操作系统，准备适合你的接入配置。",
       "preview": "通用示例模式：密钥为占位符，示例不代表当前账号已获得模型权限。",
       "key": "选择密钥",
       "generic": "阅读通用指南",
@@ -51,7 +51,7 @@ export default {
     },
     "onboarding": {
       "title": "开始使用",
-      "intro": "一步步完成接入，已有统计和操作仍在下方。",
+      "intro": "从选择服务到首次请求，按步骤连接你的工作流。",
       "services": "查看可用服务",
       "key": "创建密钥",
       "configure": "配置工具",

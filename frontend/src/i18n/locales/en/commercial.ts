@@ -26,7 +26,7 @@ export default {
     },
     "connect": {
       "title": "Connection center",
-      "subtitle": "Choose your tool and system, then connect your workflow using the existing configuration guides.",
+      "subtitle": "Choose a tool and operating system to prepare your connection settings.",
       "preview": "Generic examples: the key is a placeholder. Examples do not grant access to models.",
       "key": "Choose a key",
       "generic": "Read generic instructions",
@@ -51,7 +51,7 @@ export default {
     },
     "onboarding": {
       "title": "Getting started",
-      "intro": "Complete your setup step by step. Your existing statistics and actions remain below.",
+      "intro": "Connect your workflow, from choosing a service to confirming your first request.",
       "services": "Explore available services",
       "key": "Create a key",
       "configure": "Configure your tool",
