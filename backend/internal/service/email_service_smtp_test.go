@@ -10,6 +10,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/base64"
 	"math/big"
 	"net"
 	"strings"
@@ -57,6 +58,7 @@ type fakeSMTPServer struct {
 	listener          net.Listener
 	tlsConfig         *tls.Config
 	advertiseStartTLS bool
+	authMechanisms    string
 
 	mu       sync.Mutex
 	commands []string
@@ -64,7 +66,7 @@ type fakeSMTPServer struct {
 	wg       sync.WaitGroup
 }
 
-func startFakeSMTPServer(t *testing.T, implicitTLS, advertiseStartTLS bool) (*fakeSMTPServer, int) {
+func startFakeSMTPServer(t *testing.T, implicitTLS, advertiseStartTLS bool, mechanisms ...string) (*fakeSMTPServer, int) {
 	t.Helper()
 	cert, pool := newSMTPTestCert(t)
 	prevPool := smtpTestRootCAs
@@ -79,6 +81,10 @@ func startFakeSMTPServer(t *testing.T, implicitTLS, advertiseStartTLS bool) (*fa
 		listener:          listener,
 		tlsConfig:         &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12},
 		advertiseStartTLS: advertiseStartTLS,
+	}
+	srv.authMechanisms = "PLAIN LOGIN"
+	if len(mechanisms) > 0 {
+		srv.authMechanisms = mechanisms[0]
 	}
 	if implicitTLS {
 		srv.listener = tls.NewListener(listener, srv.tlsConfig)
@@ -154,7 +160,7 @@ func (srv *fakeSMTPServer) serve(conn net.Conn, allowStartTLS bool) {
 			if allowStartTLS {
 				ok = ok && writeLine("250-STARTTLS")
 			}
-			if !(ok && writeLine("250-AUTH PLAIN LOGIN") && writeLine("250 8BITMIME")) {
+			if !(ok && writeLine("250-AUTH "+srv.authMechanisms) && writeLine("250 8BITMIME")) {
 				return
 			}
 		case upper == "STARTTLS" && allowStartTLS:
@@ -168,7 +174,7 @@ func (srv *fakeSMTPServer) serve(conn net.Conn, allowStartTLS bool) {
 			srv.serveUpgraded(tlsConn)
 			return
 		case strings.HasPrefix(upper, "AUTH"):
-			if !writeLine("235 2.7.0 authentication successful") {
+			if !srv.authenticate(cmd, reader, writeLine) {
 				return
 			}
 		case strings.HasPrefix(upper, "MAIL"), strings.HasPrefix(upper, "RCPT"):
@@ -227,11 +233,11 @@ func (srv *fakeSMTPServer) serveCommands(reader *bufio.Reader, writer *bufio.Wri
 		upper := strings.ToUpper(cmd)
 		switch {
 		case strings.HasPrefix(upper, "EHLO"), strings.HasPrefix(upper, "HELO"):
-			if !(writeLine("250-fake.test") && writeLine("250-AUTH PLAIN LOGIN") && writeLine("250 8BITMIME")) {
+			if !(writeLine("250-fake.test") && writeLine("250-AUTH "+srv.authMechanisms) && writeLine("250 8BITMIME")) {
 				return
 			}
 		case strings.HasPrefix(upper, "AUTH"):
-			if !writeLine("235 2.7.0 authentication successful") {
+			if !srv.authenticate(cmd, reader, writeLine) {
 				return
 			}
 		case strings.HasPrefix(upper, "MAIL"), strings.HasPrefix(upper, "RCPT"):
@@ -379,5 +385,66 @@ func TestSendEmailWithConfigImplicitTLS(t *testing.T) {
 	}
 	if !srv.sawCommand("DATA") {
 		t.Fatal("expected send path to reach DATA")
+	}
+}
+
+// LOGIN-only servers must complete both challenges before accepting mail.
+func (srv *fakeSMTPServer) authenticate(cmd string, reader *bufio.Reader, writeLine func(string) bool) bool {
+	if srv.authMechanisms != "LOGIN" {
+		return writeLine("235 2.7.0 authentication successful")
+	}
+	if cmd != "AUTH LOGIN" {
+		return writeLine("504 5.7.4 Unrecognized authentication type")
+	}
+	for _, pair := range [][2]string{{"Username:", "user"}, {"Password:", "pass"}} {
+		if !writeLine("334 " + base64.StdEncoding.EncodeToString([]byte(pair[0]))) {
+			return false
+		}
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			return false
+		}
+		decoded, err := base64.StdEncoding.DecodeString(strings.TrimSpace(line))
+		if err != nil || string(decoded) != pair[1] {
+			return writeLine("535 5.7.8 Authentication failed")
+		}
+	}
+	return writeLine("235 2.7.0 authentication successful")
+}
+
+func TestSMTPLoginOnlyProvider(t *testing.T) {
+	for _, implicit := range []bool{false, true} {
+		name := "STARTTLS"
+		if implicit {
+			name = "implicitTLS"
+		}
+		t.Run(name, func(t *testing.T) {
+			srv, port := startFakeSMTPServer(t, implicit, !implicit, "LOGIN")
+			svc := &EmailService{}
+			config := smtpTestConfig(port, true)
+			if err := svc.TestSMTPConnectionWithConfig(config); err != nil {
+				t.Fatal(err)
+			}
+			if err := svc.SendEmailWithConfig(config, "rcpt@example.com", "subject", "<p>body</p>"); err != nil {
+				t.Fatal(err)
+			}
+			if !srv.sawCommand("AUTH LOGIN") || !srv.sawCommand("DATA") {
+				t.Fatal("LOGIN and message delivery must both succeed")
+			}
+			config.Password = "wrong"
+			if err := svc.TestSMTPConnectionWithConfig(config); err == nil {
+				t.Fatal("wrong credentials must be rejected")
+			}
+		})
+	}
+}
+
+func TestSMTPLoginRefusesPlaintext(t *testing.T) {
+	srv, port := startFakeSMTPServer(t, false, false, "LOGIN")
+	if err := (&EmailService{}).TestSMTPConnectionWithConfig(smtpTestConfig(port, false)); err == nil {
+		t.Fatal("LOGIN must require TLS even when disabled in settings")
+	}
+	if srv.sawCommand("AUTH") {
+		t.Fatal("must not send credentials without TLS")
 	}
 }
