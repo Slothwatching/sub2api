@@ -1,6 +1,6 @@
 <template>
   <component :is="auth.isAuthenticated ? AppLayout : 'div'" :class="auth.isAuthenticated ? '' : 'min-h-screen bg-gray-50 text-gray-900 dark:bg-dark-950 dark:text-white'">
-    <PlazaNavBar v-if="!auth.isAuthenticated" />
+    <PlazaNavBar v-if="!auth.isAuthenticated" login-redirect="/connect" />
     <div class="mx-auto max-w-5xl space-y-6" :class="!auth.isAuthenticated && 'px-4 py-8'">
       <header v-if="!auth.isAuthenticated"><h1 class="text-3xl font-semibold">{{ t('commercial.connect.title') }}</h1></header>
       <p class="text-gray-500 dark:text-dark-300">{{ t('commercial.connect.subtitle') }}</p>
@@ -23,7 +23,7 @@
   </component>
 </template>
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '@/stores/auth'
 import { useAppStore } from '@/stores/app'
@@ -44,13 +44,31 @@ watch(endpoints, next => { if (!next.some(ep => ep.endpoint === endpoint.value))
 const usableKeys = computed(() => keys.value.filter(key => key.status === 'active' && (!key.expires_at || Date.parse(key.expires_at) > Date.now()) && (!key.quota || key.quota_used < key.quota) && key.group))
 const selectedKey = computed(() => usableKeys.value.find(key => String(key.id) === keyID.value))
 const platform = computed(() => selectedKey.value?.group?.platform ?? genericPlatform.value)
+let loadVersion = 0
 async function load() {
-  if (!auth.isAuthenticated) { keys.value = []; keyID.value = ''; return }
-  loading.value = true; loadFailed.value = false
-  try { const result: ApiKey[] = []; let page = 1; let total = 0; do { const res = await keysAPI.list(page++, 100); result.push(...res.items); total = res.total } while (result.length < total); keys.value = result }
-  catch { keys.value = []; keyID.value = ''; loadFailed.value = true }
-  finally { loading.value = false }
+  const version = ++loadVersion
+  keys.value = []; keyID.value = ''; loadFailed.value = false
+  if (!auth.isAuthenticated) { loading.value = false; return }
+  loading.value = true
+  try {
+    const result: ApiKey[] = []
+    let page = 1
+    let total = 0
+    do {
+      const res = await keysAPI.list(page++, 100)
+      if (version !== loadVersion || !auth.isAuthenticated) return
+      result.push(...res.items)
+      total = res.total
+      if (!res.items.length) break
+    } while (result.length < total)
+    keys.value = result
+  } catch {
+    if (version === loadVersion) loadFailed.value = true
+  } finally {
+    if (version === loadVersion) loading.value = false
+  }
 }
+onBeforeUnmount(() => { loadVersion++; keys.value = [] })
 watch(() => auth.isAuthenticated, load)
 onMounted(() => { void app.fetchPublicSettings(); void load() })
 </script>

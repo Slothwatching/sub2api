@@ -33,27 +33,27 @@ func ParseCommunityLinks(raw string) []CommunityLink {
 
 func ValidateCommunityLinks(items []CommunityLink) error {
 	if len(items) > 6 {
-		return fmt.Errorf("At most 6 communities are supported")
+		return fmt.Errorf("at most 6 communities are supported")
 	}
 	ids := map[string]bool{}
 	for _, item := range items {
 		if item.ID == "" || len(item.ID) > 80 || ids[item.ID] {
-			return fmt.Errorf("Community IDs must be present and unique")
+			return fmt.Errorf("community IDs must be present and unique")
 		}
 		ids[item.ID] = true
 		if utf8.RuneCountInString(item.Name) > 80 || utf8.RuneCountInString(item.NameEN) > 80 || len(item.Platform) > 40 || len(item.Account) > 200 {
-			return fmt.Errorf("Community text is too long")
+			return fmt.Errorf("community text is too long")
 		}
 		if item.Status != "open" && item.Status != "full" && item.Status != "paused" {
-			return fmt.Errorf("Invalid community status")
+			return fmt.Errorf("invalid community status")
 		}
 		if item.Enabled && (strings.TrimSpace(item.Name) == "" || (strings.TrimSpace(item.Account) == "" && item.QRCode == "" && item.URL == "")) {
-			return fmt.Errorf("Enabled communities require a name and contact method")
+			return fmt.Errorf("enabled communities require a name and contact method")
 		}
 		if item.URL != "" {
 			u, err := url.Parse(item.URL)
 			if err != nil || len(item.URL) > 2048 || (u.Scheme != "https" && u.Scheme != "http") || u.Hostname() == "" || u.User != nil {
-				return fmt.Errorf("Community links must be absolute HTTP(S) URLs without credentials")
+				return fmt.Errorf("community links must be absolute HTTP(S) URLs without credentials")
 			}
 		}
 		if item.QRCode != "" {
@@ -64,7 +64,7 @@ func ValidateCommunityLinks(items []CommunityLink) error {
 			}
 			data, err := base64.StdEncoding.DecodeString(encoded)
 			if err != nil || len(data) > 300*1024 || http.DetectContentType(data) != mime {
-				return fmt.Errorf("Invalid QR image")
+				return fmt.Errorf("invalid QR image")
 			}
 		}
 	}

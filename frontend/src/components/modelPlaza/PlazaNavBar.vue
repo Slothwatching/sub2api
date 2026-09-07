@@ -34,7 +34,7 @@
       </RouterLink>
       <RouterLink
         v-else
-        :to="{ path: '/login', query: { redirect: '/model-plaza' } }"
+        :to="{ path: '/login', query: { redirect: loginRedirect } }"
         class="btn btn-primary flex-shrink-0"
       >
         {{ t('modelPlaza.nav.login') }}
@@ -53,6 +53,7 @@ import { sanitizeUrl } from '@/utils/url'
 import { useAppStore } from '@/stores/app'
 import { useAuthStore } from '@/stores/auth'
 
+withDefaults(defineProps<{ loginRedirect?: string }>(), { loginRedirect: '/model-plaza' })
 const { t } = useI18n()
 const appStore = useAppStore()
 const authStore = useAuthStore()
