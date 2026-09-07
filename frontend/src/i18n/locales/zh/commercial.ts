@@ -53,6 +53,8 @@ export default {
       "title": "开始使用",
       "intro": "从选择服务到首次请求，按步骤连接你的工作流。",
       "services": "查看可用服务",
+      "channels": "查看可用渠道",
+      "accessGuide": "了解接入方式",
       "key": "创建密钥",
       "configure": "配置工具",
       "request": "查看首次请求",

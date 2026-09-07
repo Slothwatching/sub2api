@@ -53,6 +53,8 @@ export default {
       "title": "Getting started",
       "intro": "Connect your workflow, from choosing a service to confirming your first request.",
       "services": "Explore available services",
+      "channels": "View available channels",
+      "accessGuide": "Explore connection options",
       "key": "Create a key",
       "configure": "Configure your tool",
       "request": "Review your first request",

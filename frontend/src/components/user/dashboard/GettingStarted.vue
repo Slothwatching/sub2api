@@ -32,7 +32,12 @@ const collapsed = ref(false); const configured = ref(false); const loading = ref
 const groups = ref<Group[]>([]); const subscriptions = ref<UserSubscription[]>([]); const hasKey = ref(false); const hasRequest = ref(false)
 const paymentEnabled = computed(() => !auth.isSimpleMode && isFeatureFlagEnabled(FeatureFlags.payment))
 const hasCommunities = computed(() => app.cachedPublicSettings?.community_links?.some(item => item.enabled))
-const steps = computed(() => [{ label: 'services', to: isFeatureFlagEnabled(FeatureFlags.modelPlaza) ? '/model-plaza?embedded=1' : '/connect', done: groups.value.length > 0 }, { label: 'key', to: '/keys', done: hasKey.value }, { label: 'configure', to: '/connect', done: configured.value }, { label: 'request', to: auth.isSimpleMode ? '/keys' : '/usage', done: hasRequest.value }])
+const serviceStep = computed(() => {
+  if (isFeatureFlagEnabled(FeatureFlags.availableChannels)) return { label: 'channels', to: '/available-channels' }
+  if (isFeatureFlagEnabled(FeatureFlags.modelPlaza)) return { label: 'services', to: '/model-plaza?embedded=1' }
+  return { label: 'accessGuide', to: '/connect' }
+})
+const steps = computed(() => [{ ...serviceStep.value, done: groups.value.length > 0 }, { label: 'key', to: '/keys', done: hasKey.value }, { label: 'configure', to: '/connect', done: configured.value }, { label: 'request', to: auth.isSimpleMode ? '/keys' : '/usage', done: hasRequest.value }])
 async function load() {
   loading.value = true; failed.value = false
   try {
