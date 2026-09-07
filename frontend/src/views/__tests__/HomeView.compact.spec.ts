@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount, RouterLinkStub } from '@vue/test-utils'
 
+import enLanding from '@/i18n/locales/en/landing'
+import zhLanding from '@/i18n/locales/zh/landing'
 import HomeView from '../HomeView.vue'
 
 const { appStore, authStore } = vi.hoisted(() => ({
@@ -115,11 +117,27 @@ describe('HomeView compact mode', () => {
     expect(compactDestination(mountHome({ compact_home_enabled: true }))).toBe('/login')
   })
 
-  it('limits default-home model promotion to Claude and GPT while preserving configured branding', () => {
+  it('limits default-home positioning to GPT and Codex while preserving configured branding', () => {
     const wrapper = mountHome()
-    expect(wrapper.get('.home-provider-list').findAll('span').map(item => item.text())).toEqual(['home.providers.claude', 'GPT'])
+    expect(wrapper.get('.home-provider-list').findAll('span').map(item => item.text())).toEqual(['GPT', 'Codex'])
     expect(wrapper.get('.home-lead').text()).toBe('Test subtitle')
+    expect(wrapper.get('.home-support').text()).toContain('home.workspace.supportTitle')
+    expect(wrapper.findAllComponents(RouterLinkStub).some(link => link.props('to') === '/connect')).toBe(true)
     wrapper.unmount()
+  })
+
+  it('keeps default Chinese and English positioning focused on GPT, Codex and real support paths', () => {
+    const enCopy = JSON.stringify(enLanding.home)
+    const zhCopy = JSON.stringify(zhLanding.home)
+
+    expect(enCopy).toContain('GPT & Codex Access')
+    expect(enCopy).toContain('Technical guidance')
+    expect(enCopy).not.toContain('Claude & GPT')
+    expect(enCopy).not.toContain('free trial credits')
+    expect(zhCopy).toContain('GPT 与 Codex 接入')
+    expect(zhCopy).toContain('技术支持与指导')
+    expect(zhCopy).not.toContain('Claude 与 GPT')
+    expect(zhCopy).not.toContain('免费试用额度')
   })
 
   it.each(['', '  ', 'Subscription to API Conversion Platform'])('localizes an empty or legacy default subtitle (%s)', (site_subtitle) => {

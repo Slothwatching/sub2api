@@ -12,16 +12,21 @@ export default {
       label: '工作空间',
       administration: '管理工作区',
       navigation: '主导航',
-      eyebrow: '让 Claude 与 GPT 融入你的工作流',
-      defaultSubtitle: '连接常用工具，用 Claude 与 GPT 构建应用，让每一次使用清晰可控。',
-      guideTitle: '从接入，到第一次调用',
+      eyebrow: '专注 GPT 与 Codex 接入',
+      defaultSubtitle: '为 Codex 与 OpenAI 兼容工具提供专注的 GPT 接入、流式响应与透明用量。',
+      guideTitle: '从配置，到第一次 GPT 调用',
       step1Title: '创建 API 密钥',
-      step1Description: '选择可用分组，并设置适合自己的额度限制。',
+      step1Description: '选择可用的 GPT 分组，并设置适合自己的额度限制。',
       step2Title: '连接常用工具',
-      step2Description: '通过密钥使用指南，配置 Claude Code、Codex 或自己的应用。',
+      step2Description: '通过密钥使用指南，配置 Codex 或自己的 OpenAI 兼容应用。',
       step3Title: '看清每一次使用',
       step3Description: '在控制台查看请求、Token 用量与费用明细。',
-      providerNote: '具体可用模型与价格以你的可用分组为准。',
+      providerNote: '具体可用 GPT 模型与价格以你的分组为准。',
+      supportEyebrow: '技术支持与指导',
+      supportTitle: '从配置到排障，都有清晰指引',
+      supportDescription: '接入中心提供配置说明与常见问题排查。寻求帮助时，请提供请求时间、状态码和模型名称；不要发送 API 密钥或提示词正文。',
+      supportPrimary: '打开接入中心',
+      supportDocs: '阅读使用文档',
       notFoundDescription: '页面可能已移动，或你输入的地址不正确。'
     },
     viewOnGithub: '在 GitHub 上查看',
@@ -34,10 +39,10 @@ export default {
     getStarted: '立即开始',
     goToDashboard: '进入控制台',
     // 新增：面向用户的价值主张
-    heroSubtitle: '一个密钥，畅用多个 AI 模型',
-    heroDescription: '无需管理多个订阅账号，一站式接入 Claude、GPT、Gemini 等主流 AI 服务',
+    heroSubtitle: '面向开发工作流的 GPT 专线',
+    heroDescription: '通过清晰的接入指引连接 Codex 与 OpenAI 兼容工具，获得流式响应与透明用量。',
     tags: {
-      subscriptionToApi: 'Claude 与 GPT 接入',
+      subscriptionToApi: 'GPT 与 Codex 接入',
       stickySession: '流式响应',
       realtimeBilling: '用量透明'
     },
@@ -70,7 +75,7 @@ export default {
     },
     features: {
       unifiedGateway: '为常用工具而构建',
-      unifiedGatewayDesc: '通过一个 API 密钥和清晰的配置指引，连接 Claude Code、Codex 与自己的应用。',
+      unifiedGatewayDesc: '通过一个 API 密钥和清晰的配置指引，连接 Codex 与 OpenAI 兼容应用。',
       multiAccount: '让工作持续推进',
       multiAccountDesc: '以流式输出逐步获取响应。在控制台查看请求记录，帮助定位调用中遇到的问题。',
       balanceQuota: '每一次调用都有明细',
@@ -113,8 +118,8 @@ export default {
       }
     },
     providers: {
-      title: '已支持的 AI 模型',
-      description: '一个 API，多种选择',
+      title: '专注 GPT 接入',
+      description: '面向 GPT 与 Codex 工作流的专注服务',
       supported: '已支持',
       soon: '即将推出',
       claude: 'Claude',
@@ -125,8 +130,8 @@ export default {
     // CTA 区块
     cta: {
       title: '准备好开始了吗？',
-      description: '注册即可获得免费试用额度，体验一站式 AI 服务',
-      button: '免费注册'
+      description: '创建账号，查看可用 GPT 服务，并按照接入指南完成配置。',
+      button: '创建账号'
     },
     footer: {
       allRightsReserved: '保留所有权利。'

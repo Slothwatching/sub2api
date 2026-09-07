@@ -26,7 +26,7 @@ export default {
     },
     "connect": {
       "title": "Connection center",
-      "subtitle": "Choose a tool and operating system to prepare your connection settings.",
+      "subtitle": "Configure Codex or an OpenAI-compatible tool, then verify your first GPT request.",
       "preview": "Generic examples: the key is a placeholder. Examples do not grant access to models.",
       "key": "Choose a key",
       "generic": "Read generic instructions",
@@ -45,13 +45,13 @@ export default {
       "rateQ": "Rate limits, timeouts or interrupted streams?",
       "rateA": "Check failed requests in usage history, your limits and your connection. Follow retry guidance with backoff. Share time, status code and model name when asking for help, not keys or request bodies.",
       "steps": "Configuration steps",
-      "step1": "Choose a tool and operating system compatible with your key’s group.",
+      "step1": "Choose Codex or an OpenAI-compatible tool supported by your GPT group.",
       "step2": "Follow the guide below to update the indicated configuration; back up existing files first.",
       "step3": "Make a request from your own client, then confirm the result in usage history."
     },
     "onboarding": {
       "title": "Getting started",
-      "intro": "Connect your workflow, from choosing a service to confirming your first request.",
+      "intro": "Connect your GPT workflow, from choosing available access to confirming your first request.",
       "services": "Explore available services",
       "channels": "View available channels",
       "accessGuide": "Explore connection options",

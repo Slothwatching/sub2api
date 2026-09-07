@@ -148,6 +148,11 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
 .home-feature-index { font-family: var(--ui-display); color: var(--ui-accent); font-size: 24px; }
 .home-features h2 { font-size: 18px; font-weight: 500; margin-block: 16px 10px; }
 .home-features p { color: var(--ui-muted); line-height: 1.9; font-size: 14px; }
+.home-support { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 28px; padding: 30px; border: 1px solid var(--ui-line); border-radius: 16px; background: var(--ui-surface); box-shadow: var(--ui-shadow); }
+.home-support > div:first-child { flex: 1 1 520px; min-width: 0; }
+.home-support h2 { font-family: var(--ui-display); font-size: 26px; font-weight: 500; margin-block: 12px 8px; }
+.home-support p:not(.home-eyebrow) { max-width: 720px; color: var(--ui-muted); font-size: 14px; line-height: 1.8; }
+.home-support-actions { display: flex; flex: 0 1 auto; flex-wrap: wrap; gap: 10px; }
 .home-providers { display: flex; flex-wrap: wrap; align-items: center; gap: 24px; padding: 28px 0 44px; }
 .home-providers-heading { flex: 1; min-width: 190px; }
 .home-providers h2 { font-family: var(--ui-display); font-size: 24px; font-weight: 500; margin-bottom: 8px; }
@@ -300,4 +305,7 @@ button, a, input, select, textarea { -webkit-tap-highlight-color: transparent; }
   .home-guide { grid-template-columns: 1fr; padding: 22px; gap: 0; }
   .home-guide-heading { margin-bottom: 20px; }
   .home-features article { padding: 22px; }
+  .home-support { padding: 22px; }
+  .home-support-actions { width: 100%; }
+  .home-support-actions .btn { flex: 1 1 180px; }
 }

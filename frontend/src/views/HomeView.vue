@@ -141,14 +141,30 @@
           <p>{{ t(`home.features.${feature}Desc`) }}</p>
         </article>
       </section>
+      <section class="home-support" aria-labelledby="home-support-title">
+        <div>
+          <p class="home-eyebrow">{{ t('home.workspace.supportEyebrow') }}</p>
+          <h2 id="home-support-title">{{ t('home.workspace.supportTitle') }}</h2>
+          <p>{{ t('home.workspace.supportDescription') }}</p>
+        </div>
+        <div class="home-support-actions">
+          <router-link to="/connect" class="btn btn-primary">
+            {{ t('home.workspace.supportPrimary') }}
+            <Icon name="arrowRight" size="sm" class="ml-2" />
+          </router-link>
+          <a v-if="docUrl" :href="docUrl" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+            {{ t('home.workspace.supportDocs') }}
+          </a>
+        </div>
+      </section>
       <section class="home-providers">
         <div class="home-providers-heading">
           <h2>{{ t('home.providers.title') }}</h2>
           <p>{{ t('home.workspace.providerNote') }}</p>
         </div>
         <div class="home-provider-list">
-          <span>{{ t('home.providers.claude') }}</span>
           <span>GPT</span>
+          <span>Codex</span>
         </div>
       </section>
     </main>
