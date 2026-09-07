@@ -122,6 +122,12 @@ describe('HomeView compact mode', () => {
     wrapper.unmount()
   })
 
+  it.each(['', '  ', 'Subscription to API Conversion Platform'])('localizes an empty or legacy default subtitle (%s)', (site_subtitle) => {
+    const wrapper = mountHome({ site_subtitle })
+    expect(wrapper.get('.home-lead').text()).toBe('home.workspace.defaultSubtitle')
+    wrapper.unmount()
+  })
+
   it('links authenticated users to their dashboard', () => {
     authStore.isAuthenticated = true
 

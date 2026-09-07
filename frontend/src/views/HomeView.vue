@@ -179,7 +179,13 @@ const appStore = useAppStore()
 // Site settings - directly from appStore (already initialized from injected config)
 const siteName = computed(() => appStore.cachedPublicSettings?.site_name || appStore.siteName || 'Sub2API')
 const siteLogo = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.site_logo || appStore.siteLogo || '', { allowRelative: true, allowDataUrl: true }))
-const siteSubtitle = computed(() => appStore.cachedPublicSettings?.site_subtitle || t('home.workspace.defaultSubtitle'))
+const siteSubtitle = computed(() => {
+  const configured = appStore.cachedPublicSettings?.site_subtitle?.trim()
+  // Older backends return this built-in placeholder for an empty setting.
+  return configured && configured !== 'Subscription to API Conversion Platform'
+    ? configured
+    : t('home.workspace.defaultSubtitle')
+})
 const docUrl = computed(() => sanitizeUrl(appStore.cachedPublicSettings?.doc_url || appStore.docUrl || ''))
 const homeContent = computed(() => appStore.cachedPublicSettings?.home_content || '')
 const hasHomeContent = computed(() => homeContent.value.trim().length > 0)
