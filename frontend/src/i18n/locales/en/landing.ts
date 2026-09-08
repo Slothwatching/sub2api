@@ -25,7 +25,8 @@ export default {
       supportEyebrow: 'Technical guidance',
       supportTitle: 'Setup help when you need it',
       supportDescription: 'Follow the connection center for configuration guidance and practical troubleshooting. When asking for help, share the request time, status code and model name—never your API key or prompt.',
-      supportPrimary: 'Open connection center',
+      supportPrimary: 'View setup guide',
+      setupGuide: 'Setup guide',
       supportDocs: 'Read documentation',
       notFoundDescription: 'This page may have moved, or the address may be incorrect.'
     },

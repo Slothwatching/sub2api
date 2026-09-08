@@ -116,6 +116,7 @@
             <router-link v-if="!isAuthenticated && appStore.cachedPublicSettings?.registration_enabled" to="/register" class="btn btn-secondary px-6 py-3">
               {{ t('auth.createAccount') }}
             </router-link>
+            <router-link to="/connect" class="btn btn-ghost gap-2 px-4 py-3"><Icon name="book" size="sm" />{{ t('home.workspace.setupGuide') }}</router-link>
           </div>
         </div>
         <div class="home-guide">
