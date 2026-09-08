@@ -25,7 +25,8 @@ export default {
       supportEyebrow: '技术支持与指导',
       supportTitle: '从配置到排障，都有清晰指引',
       supportDescription: '接入中心提供配置说明与常见问题排查。寻求帮助时，请提供请求时间、状态码和模型名称；不要发送 API 密钥或提示词正文。',
-      supportPrimary: '打开接入中心',
+      supportPrimary: '查看新手配置教程',
+      setupGuide: '新手配置教程',
       supportDocs: '阅读使用文档',
       notFoundDescription: '页面可能已移动，或你输入的地址不正确。'
     },

@@ -1,5 +1,65 @@
 export default {
   "commercial": {
+    "ccSwitch": {
+      "recommended": "Recommended setup",
+      "title": "Connect Codex with CC Switch",
+      "intro": "Already have the Codex desktop app? Follow these five steps: install CC Switch, create a key, import it, enable the provider, and start using Codex.",
+      "os": "Computer operating system",
+      "enlarge": "Enlarge image: {title}",
+      "otherMethods": "Manual configuration and other clients",
+      "otherMethodsHint": "Need configuration files or another client? All connection options are available below.",
+      "reference": "Screenshots use sanitized examples. Button positions may vary by version. References checked: 2026-09-08.",
+      "manual": "Official CC Switch instructions",
+      "download": {
+        "short": "Install",
+        "title": "Download and open CC Switch",
+        "body": "Install and open CC Switch on the same computer where you use Codex. Already installed it? Continue to the next step.",
+        "mac": "Under Assets on the official release page, download the macOS .dmg installer. Open it, drag CC Switch into Applications, then launch it from Applications.",
+        "windows": "Under Assets on the official release page, download the Windows .msi installer. Double-click it, follow the installation prompts, and open CC Switch.",
+        "linux": "Under Assets on the official release page, choose the .deb, .rpm, or .AppImage file for your distribution and processor, then install or run it using your system's normal process.",
+        "action": "Open official downloads"
+      },
+      "create": {
+        "short": "Create a key",
+        "title": "Create an API key on this site",
+        "body": "Open API Keys and select Create Key. 1. Enter a recognizable name, such as Codex. 2. Select an OpenAI group available to your account. 3. Select Create. Set any optional limits as needed.",
+        "action": "Open API Keys",
+        "note": "A group is required. Available names, rates, and permissions depend on your account. You will be asked to sign in first if needed. If you have no group or credit, use the community links below to ask about access.",
+        "imageAlt": "Create Key dialog: 1 enter a name, 2 select an available OpenAI group, 3 select Create at the bottom right.",
+        "caption": "1. Name, 2. Group, 3. Create. The group shown is an example; the screenshot uses the Chinese interface."
+      },
+      "import": {
+        "short": "Import to CCS",
+        "title": "Select Import to CCS next to your key",
+        "body": "Find the key you just created and select Import to CCS in its Actions column. If the browser asks to open CC Switch, choose Allow or Open. This sends the selected key and this site's configuration to CC Switch on your computer.",
+        "imageAlt": "API key Actions column: marker 1 highlights Import to CCS, between Use Key and Disable.",
+        "caption": "1. Import to CCS. Scroll the key table horizontally if the Actions column is off-screen."
+      },
+      "enable": {
+        "short": "Enable",
+        "title": "Confirm the import and enable the provider",
+        "body": "In the import window, check the site name, address, and Codex app, then confirm. 1. Select the Codex icon at the top. 2. Find this site's provider and select Enable. Keep your existing providers so you can switch back later.",
+        "imageAlt": "CC Switch example: marker 1 selects the Codex icon, and marker 2 highlights the provider's Enable button.",
+        "caption": "1. Codex, 2. Enable. Example API is a placeholder; use this site's actual name and address below."
+      },
+      "verify": {
+        "short": "Start using Codex",
+        "title": "Restart Codex and send your first message",
+        "body": "Wait for running tasks to finish, fully quit the Codex desktop app, then reopen it. Start a new local chat, select a model your account can access, and send this short message.",
+        "prompt": "Reply only with: Connection successful.",
+        "action": "View usage records",
+        "keyUsage": "View key usage",
+        "note": "After receiving a reply, check for a matching request or usage change on this site. Test requests are billed under your normal usage rules. Importing a provider, seeing a balance, or reading a step does not confirm a successful model request."
+      },
+      "help": {
+        "openQ": "CC Switch did not open after importing?",
+        "openA": "Check that CC Switch is installed and running on this computer. Select Import to CCS again and allow your browser to open the external app. If the import window appears despite a website warning that CC Switch is not installed, continue checking the configuration there. If it still does not open, use the manual instructions below. You can read this guide on a phone, but import on the computer where your client is installed.",
+        "groupQ": "Asked to select a group when creating a key?",
+        "groupA": "After entering a name, open the group selector and choose an available OpenAI group before selecting Create. If the list is empty, check your account's service access first. Do not copy the example group from the screenshot.",
+        "switchQ": "Codex still uses the previous service?",
+        "switchA": "Make sure this site's provider is enabled in CC Switch's Codex tab, then fully quit and reopen Codex and start a new local chat. Check that both apps use the same user's configuration directory. Closing a window or importing without enabling may not switch providers. To restore your previous setup, enable the original provider, restart Codex, and sign in again if prompted."
+      }
+    },
     "community": {
       "title": "Join the community",
       "subtitle": "Get setup help and service updates.",

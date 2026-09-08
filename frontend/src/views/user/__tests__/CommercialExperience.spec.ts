@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
 const mocks = vi.hoisted(() => ({ auth: { isAuthenticated: false, isSimpleMode: false, user: { id: 1, balance: 0 } }, app: { siteName: 'Example', cachedPublicSettings: { api_base_url: 'https://gateway.example.com', custom_endpoints: [], community_links: [] }, fetchPublicSettings: vi.fn() }, keys: vi.fn(), groups: vi.fn(), subscriptions: vi.fn(), stats: vi.fn(), monitors: vi.fn() }))
-vi.mock('vue-i18n', async (importOriginal) => ({ ...await importOriginal<typeof import('vue-i18n')>(), useI18n: () => ({ t: (key: string) => key }) }))
+vi.mock('vue-i18n', async (importOriginal) => ({ ...await importOriginal<typeof import('vue-i18n')>(), useI18n: () => ({ t: (key: string) => key, locale: { value: 'zh' } }) }))
 vi.mock('@/stores/auth', () => ({ useAuthStore: () => mocks.auth }))
 vi.mock('@/stores/app', () => ({ useAppStore: () => mocks.app }))
 vi.mock('@/api/keys', () => ({ list: mocks.keys }))
@@ -14,6 +14,42 @@ import GettingStarted from '@/components/user/dashboard/GettingStarted.vue'
 const global = { stubs: { AppLayout: { template: '<main><slot /></main>' }, PlazaNavBar: true, UseKeyContent: { props: ['apiKey', 'platform', 'baseUrl'], template: '<div data-testid="guide">{{ apiKey }}|{{ platform }}|{{ baseUrl }}</div>' }, CommunitySection: true, BillingExplanation: true, RouterLink: { props: ['to'], template: '<a :href="to"><slot /></a>' } } }
 beforeEach(() => { vi.clearAllMocks(); mocks.auth.isAuthenticated = false; mocks.keys.mockResolvedValue({ items: [], total: 0 }); mocks.groups.mockResolvedValue([]); mocks.subscriptions.mockResolvedValue([]); mocks.stats.mockResolvedValue({ total_requests: 0 }) })
 describe('connection and onboarding behavior', () => {
+ it('offers the five-step CC Switch guide with official downloads and existing key actions', async () => {
+   const w = mount(ConnectView, { global })
+   await flushPromises()
+   const guide = w.get('#cc-switch-guide')
+   expect(guide.findAll('ol > li')).toHaveLength(5)
+   expect(guide.get('a[href="https://github.com/farion1231/cc-switch/releases/latest"]').attributes('rel')).toBe('noopener noreferrer')
+   expect(guide.get('a[href="/keys"]').exists()).toBe(true)
+   expect(guide.get('a[href="/usage"]').exists()).toBe(true)
+   expect(guide.findAll('a').some(a => a.attributes('href')?.startsWith('ccswitch:'))).toBe(false)
+   await guide.findAll('[role="group"] button')[1].trigger('click')
+   expect(guide.text()).toContain('commercial.ccSwitch.download.windows')
+   expect(guide.findAll('[role="group"] button')[1].attributes('aria-pressed')).toBe('true')
+   expect(guide.text()).toContain('https://gateway.example.com')
+   expect(mocks.keys).not.toHaveBeenCalled()
+   w.unmount()
+ })
+ it('enlarges an instructional image and restores focus when closed with Escape', async () => {
+   const w = mount(ConnectView, { global, attachTo: document.body })
+   const opener = w.get('#cc-switch-create figure button')
+   ;(opener.element as HTMLButtonElement).focus()
+   await opener.trigger('click')
+   await flushPromises()
+   expect(document.querySelector('[role="dialog"] img')?.getAttribute('src')).toBe('/guides/cc-switch/create-key.webp')
+   document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }))
+   await flushPromises()
+   await vi.waitFor(() => expect(document.querySelector('[role="dialog"]')).toBeNull())
+   expect(document.activeElement).toBe(opener.element)
+   w.unmount()
+ })
+ it('uses key usage for simple mode without adding a hidden usage route', async () => {
+   mocks.auth.isSimpleMode = true
+   const w = mount(ConnectView, { global })
+   expect(w.get('#cc-switch-verify a').attributes('href')).toBe('/keys')
+   w.unmount()
+   mocks.auth.isSimpleMode = false
+ })
  it('opens anonymous guidance on the focused OpenAI and Codex path without requesting private keys', async () => { const w = mount(ConnectView, { global }); await flushPromises(); expect(mocks.keys).not.toHaveBeenCalled(); expect(w.get('[data-testid="guide"]').text()).toContain('YOUR_API_KEY|openai|'); expect(w.findAll('select')[0].element.value).toBe('openai'); expect(w.text()).toContain('commercial.connect.preview'); w.unmount() })
  it('returns to the connection center after login', () => { const w = mount(ConnectView, { global }); expect(w.findComponent({ name: 'PlazaNavBar' }).props('loginRedirect')).toBe('/connect'); w.unmount() })
  it('stops key pagination when a page is empty', async () => { mocks.auth.isAuthenticated = true; mocks.keys.mockResolvedValue({ items: [], total: 10 }); const w = mount(ConnectView, { global }); await flushPromises(); expect(mocks.keys).toHaveBeenCalledTimes(1); expect(w.get('[data-testid="guide"]').text()).toContain('YOUR_API_KEY'); w.unmount() })
