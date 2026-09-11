@@ -5,6 +5,8 @@ import { createPinia, setActivePinia } from "pinia";
 
 import type { AdminGroup, CodexModelsManifestConfig } from "@/types";
 import GroupsView from "@/views/admin/GroupsView.vue";
+import GroupModelDisplaySettings from "@/views/admin/GroupModelDisplaySettings.vue";
+import Select from "@/components/common/Select.vue";
 
 const {
   listGroups,
@@ -219,7 +221,12 @@ const mountView = () =>
         GroupCapacityBadge: true,
         GroupRateMultipliersModal: true,
         GroupRPMOverridesModal: true,
-        ReasoningEffortPolicyFields: true,
+        ReasoningEffortPolicyFields: defineComponent({
+          setup(_, { expose }) {
+            expose({ validate: () => true, resetValidation: () => undefined });
+            return () => h("div");
+          },
+        }),
         CodexManifestAccountsField: CodexManifestAccountsFieldStub,
         PricingEntryCard: true,
         VueDraggable: true,
@@ -283,6 +290,34 @@ describe("GroupsView Codex manifest binding", () => {
       }),
     );
 
+    wrapper.unmount();
+  });
+
+  it("clears display-only models when changing the creation platform", async () => {
+    const wrapper = mountView();
+    await flushPromises();
+    const createButton = wrapper.findAll("button").find((button) =>
+      button.text().includes("admin.groups.createGroup"),
+    );
+    expect(createButton).toBeTruthy();
+    await createButton!.trigger("click");
+    await flushPromises();
+
+    const display = wrapper.getComponent(GroupModelDisplaySettings);
+    display.vm.$emit("update:modelValue", {
+      enabled: true,
+      models: ["custom-model"],
+    });
+    await flushPromises();
+    expect(display.props("modelValue").models).toEqual(["custom-model"]);
+
+    const platform = wrapper.findAllComponents(Select).find((select) =>
+      select.attributes("data-tour") === "group-form-platform",
+    );
+    expect(platform).toBeTruthy();
+    platform!.vm.$emit("update:modelValue", "gemini");
+    await flushPromises();
+    expect(display.props("modelValue")).toEqual({ enabled: false, models: [] });
     wrapper.unmount();
   });
 });

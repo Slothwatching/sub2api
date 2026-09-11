@@ -6699,6 +6699,7 @@ watch(
     }
     resetDisabledBatchImagePricing(createForm);
     resetModelAllowlistState(createModelAllowlistState);
+    createModelsListConfig.value = { enabled: false, models: [] };
     loadModelAllowlistCandidates("create", 0, newVal);
   },
 );
