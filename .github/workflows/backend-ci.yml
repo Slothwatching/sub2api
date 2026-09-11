@@ -22,11 +22,14 @@ jobs:
           /bin/sh deploy/tests/docker-compose-gateway-env-test.sh
           /bin/sh deploy/tests/docker-runtime-resources-test.sh
           /bin/sh deploy/test-caddyfile-cache.sh
+          python3 -m unittest discover -s deploy/tests -p 'test_*.py'
 
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - uses: actions/setup-go@v6
         with:
           go-version-file: backend/go.mod
@@ -42,6 +45,12 @@ jobs:
       - name: Integration tests
         working-directory: backend
         run: make test-integration
+      - name: Previous-version upgrade and rollback compatibility
+        run: bash deploy/tests/old-version-compat.sh
+      - name: Verify reviewed migration fingerprints
+        run: |
+          python3 deploy/migration_review.py "$(git rev-parse HEAD)" --output /tmp/reviewed-migration.sh
+          bash -n /tmp/reviewed-migration.sh
 
   frontend:
     runs-on: ubuntu-latest
@@ -71,6 +80,9 @@ jobs:
       - name: Production frontend build
         working-directory: frontend
         run: pnpm run build
+      - name: Full frontend regression suite
+        working-directory: frontend
+        run: pnpm test:run
 
   golangci-lint:
     runs-on: ubuntu-latest

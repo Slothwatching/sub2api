@@ -5,7 +5,7 @@ vi.mock('vue-i18n', async (original) => ({ ...await original<typeof import('vue-
 vi.mock('vue-router', () => ({ useRoute: () => ({ query: {} }), useRouter: () => ({ replace: vi.fn() }) }))
 vi.mock('@/stores/auth', () => ({ useAuthStore: () => ({ isAdmin: false }) }))
 vi.mock('@/stores/app', () => ({ useAppStore: () => ({ showError: mocks.error }) }))
-vi.mock('@/utils/featureFlags', () => ({ isChannelMonitorThroughputHidden: () => false }))
+vi.mock('@/utils/featureFlags', () => ({ isChannelMonitorThroughputHidden: () => false, isChannelMonitorUserRankingHidden: () => false }))
 vi.mock('@/api/channelMonitorV2', () => ({ getSnapshot: mocks.snapshot, getDimensions: async () => ({ platforms: [], groups: [], models: [] }), getMatrix: async () => null, getModels: async () => ({ items: [] }) }))
 import View from '../ChannelStatusV2View.vue'
 const global = { stubs: { AppLayout: { template: '<main><slot /></main>' }, Icon: true, LoadingSpinner: true, Select: true, FilterMultiSelect: true, MetricCell: true, MonitorRankBadge: true, MonitorTrendChart: true, RelayPulseMatrix: true } }
