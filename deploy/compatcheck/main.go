@@ -56,7 +56,7 @@ func run() error {
 			return err
 		}
 	}
-	groups, err := client.Group.Query().Order(dbent.Asc(group.FieldID)).All(ctx)
+	groups, err := client.Group.Query().Where(group.NameIn("selected", "empty", "rollback-created")).Order(dbent.Asc(group.FieldID)).All(ctx)
 	if err != nil {
 		return err
 	}
