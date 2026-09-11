@@ -71,7 +71,10 @@ jobs:
           set -euo pipefail
           [[ "$IMAGE_DIGEST" =~ ^sha256:[a-f0-9]{64}$ ]]
           [[ "$SOURCE_SHA" =~ ^[a-f0-9]{40}$ ]]
-          script="/opt/sub9api/bin/deploy.sh ghcr.io/slothwatching/sub9api@$IMAGE_DIGEST $SOURCE_SHA"
+          python3 deploy/migration_review.py "$SOURCE_SHA" --output reviewed-migration.sh
+          script="set -eu
+          $(cat reviewed-migration.sh)
+          /opt/sub9api/bin/deploy.sh ghcr.io/slothwatching/sub9api@$IMAGE_DIGEST $SOURCE_SHA"
           az vm run-command invoke --resource-group "$RESOURCE_GROUP" --name "$VM_NAME" \
             --command-id RunShellScript --scripts "$script" --output json > result.json
           python3 - <<'PYCODE'

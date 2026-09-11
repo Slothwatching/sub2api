@@ -30,3 +30,25 @@ func normalizeGroupModelsListConfig(cfg GroupModelsListConfig) GroupModelsListCo
 func (g *Group) CustomModelsListEnabled() bool {
 	return g != nil && g.ModelsListConfig.Enabled && len(g.ModelsListConfig.Models) > 0
 }
+
+// Discovery may be narrower than admission. Legacy display settings never
+// participate in request authorization; an explicit allowlist still bounds them.
+func (g *Group) ModelListingAllowlist() GroupModelAllowlist {
+	if g == nil {
+		return GroupModelAllowlist{}
+	}
+	if !g.CustomModelsListEnabled() {
+		return g.ModelAllowlist
+	}
+	selection := GroupModelAllowlist{Enabled: true}
+	for _, model := range g.ModelsListConfig.Models {
+		if g.ModelAllowlist.Allows(model) {
+			selection.Models = append(selection.Models, model)
+		}
+	}
+	return selection
+}
+
+func (g *Group) ModelListingEnabled() bool {
+	return g.ModelListingAllowlist().Enabled
+}
